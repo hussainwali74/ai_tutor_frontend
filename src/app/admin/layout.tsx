@@ -17,41 +17,35 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-        <div className="bg-[#373d96] flex text-white space-x-4  h-screen ">
-          <div className="flex flex-col w-1/4 justify-center h-screen space-y-2 pl-3 text-white align-middle">
+        <div className="bg-[#eae8e8] flex text-gray-900 space-x-4  h-screen ">
+          <div className="flex flex-col w-1/4 justify-center h-screen space-y-2 pl-3 text-gray-900 align-middle">
             <Link
-              className="items-center p-3 border border-gray-400 rounded-md hover:bg-gray-600"
+              className="items-center p-3 border border-gray-400 rounded-md hover:bg-gray-300"
               href="/admin"
             >
               Admin
             </Link>
           
             <Link
-              className="items-center p-3 border border-gray-400 rounded-md hover:bg-gray-600"
-              href="/admin/add-contexts"
+              className="items-center p-3 border border-gray-400 rounded-md hover:bg-gray-300"
+              href="/admin/create-subject-topic"
             >
-              Add Contexts
+              Create Subject/Topic
             </Link>
             <Link
-              className="items-center p-3 border border-gray-400 rounded-md hover:bg-gray-600"
-              href="/admin/list-contexts"
+              className="items-center p-3 border border-gray-400 rounded-md hover:bg-gray-300"
+              href="/admin/create-lesson"
             >
-              List Contexts
+              Create Lesson
             </Link>
             <Link
-              className="items-center p-3 border border-gray-400 rounded-md hover:bg-gray-600"
-              href="/admin/create-filters"
-            >
-              Add Filters
-            </Link>
-            <Link
-              className="items-center p-3 border border-gray-400 rounded-md hover:bg-gray-600"
+              className="items-center p-3 border border-gray-400 rounded-md hover:bg-gray-300"
               href="/admin/general-prompt"
             >
               General Prompt
             </Link>
           </div>
-          <div className="flex flex-col w-full  h-screen text-white ">
+          <div className="flex flex-col w-full  h-screen text-gray-900 ">
             {children}
           </div>
         </div>

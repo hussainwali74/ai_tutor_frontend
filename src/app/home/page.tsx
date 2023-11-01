@@ -1,27 +1,31 @@
 "use client";
-import { useRouter } from "next/navigation";
+import {  useRouter } from "next/router";
 import { ChatCompletionRequestMessage } from "openai";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { FilterInterface } from "../model/filter";
 import TypingAnimation from "../components/TypingAnimation";
-import unified from "unified";
-import parse from "remark-parse";
-import remark2react from "remark-react";
+
 import React from "react";
+
 import ReactDom from "react-dom";
 import Markdown from "react-markdown";
 import { ChatMessage } from "../components/chat-message";
 import { Separator } from "../components/ui/separator";
 
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { LessonInterface } from "../model/lesson";
 
 export default function Page() {
-  const router = useRouter();
+  // const router = useRouter();
+
   const [filters, setFilters] = useState<FilterInterface[]>([]);
   const [subjects, setSubjects] = useState<string[]>([]);
   const [topics, setTopics] = useState<any[]>([]);
   const [sub_topics, setSubTopics] = useState<any[]>([]);
+  const [lessonId, setLessonId] = useState<string|null>();
+  const [lesson, setLesson] = useState<LessonInterface|null>();
   const [chatLog, setChatLog] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isBegunLesson, setIsBegunLesson] = useState(false);
@@ -29,6 +33,49 @@ export default function Page() {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("");
   const [selectedSubTopic, setSelectedSubTopic] = useState("");
+  
+  const params = useSearchParams()
+  useEffect(() => {
+    setLessonId(params.get('id'))
+    setIsLoading(true);
+    setIsBegunLesson(true);
+
+    const url = process.env.BASE_URL_FRONTEND+"/api/admin/lesson";
+    setIsLoading(true);
+    axios
+      .get(url, {  params: { id: params.get('id')} })
+      .then((response) => {
+        console.log('=========================================================')
+        console.log('response',response);
+        console.log('=========================================================')
+        if (response.data.data){
+        setLesson(response.data.data)
+        setIsLoading(false);
+        setIsBegunLesson(true);
+
+          const data = {
+            subject: response.data.data?.subject,
+            topic: response.data.data?.topic,
+            lesson_title: response.data.data?.title,
+            summary: response.data.data?.summary,
+            context: response.data.data?.context,
+          };
+          
+          // startSendMessage()
+          beginChat(data);
+        }
+      })
+      .catch((error) => {
+        setIsBegunLesson(false);
+        setIsLoading(false);
+        console.log("error 57", error);
+        console.log(
+          "========================================================="
+        );
+      });
+
+  }, [params.get('id')]);
+
 
   async function onSubmit(event: any) {
     event.preventDefault();
@@ -66,7 +113,7 @@ export default function Page() {
       console.log("========== ", error);
     } finally {
       setIsLoading(true);
-      router.refresh();
+      // router.refresh();
     }
   }
   const headers = {
@@ -79,7 +126,10 @@ export default function Page() {
     // })
   }, []);
   const beginChat = (data: any) => {
-    const url = "http://127.0.0.1:8000/begin_chat";
+console.log('=========================================================')
+console.log('begin chat data',data);
+console.log('=========================================================')
+    const url = process.env.BASE_URL+"/begin_chat";
     setIsLoading(true);
     axios
       .post(url, data, { headers: headers })
@@ -149,7 +199,7 @@ export default function Page() {
       });
   };
   const sendChat = (message: any) => {
-    const url = "http://127.0.0.1:8000/chat?message=" + message;
+    const url = process.env.BASE_URL+"/chat?message=" + message;
 
     // const data = {messages:  message };
     console.log("=========================================================");
@@ -180,26 +230,6 @@ export default function Page() {
         console.log(error);
       });
   };
-  // const sendMessage = (message:any) => {
-  //   const url = '/api/chat';
-
-  //   const data = {
-  //     model: "gpt-3.5-turbo-0301",
-  //     messages: [{ "role": "user", "content": message }]
-  //   };
-
-  //   setIsLoading(true);
-  //   axios.post(url, data).then((response) => {
-  //     setChatLog(prevChatLog => {
-  //       return [...prevChatLog, { type: 'bot', message: response.data.choices[0].message.content }];
-  //     })
-
-  //     setIsLoading(false);
-  //   }).catch((error) => {
-  //     setIsLoading(false);
-  //     console.log(error);
-  //   })
-  // }
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
@@ -294,7 +324,7 @@ export default function Page() {
           >
             <div className="flex flex-col w-full">
               {chatLog.length ? (
-                <div className="flex-grow px-6 mt-5 fixed mb-20 h-[76%] w-[76%] overflow-y-auto  ">
+                <div className="flex-grow pl-6 pr-1 mt-5 fixed mb-20 h-[76%] w-[76%] overflow-y-auto  ">
                   <div className="flex flex-col space-y-4 px-10  ">
                     {chatLog.map((message, index) => (
                       <div key={index}>

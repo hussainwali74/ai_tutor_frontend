@@ -7,21 +7,30 @@ import Modal from "../components/modal";
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { LessonInterface } from "../model/lesson";
+import unified from "unified";
+import parse from "remark-parse";
+import remark2react from "remark-react";
 
 export default function Page() {
   const router = useRouter();
   const [filters, setFilters] = useState<FilterInterface[]>([]);
   const [subjects, setSubjects] = useState<string[]>([]);
   const [topics, setTopics] = useState<any[]>([]);
+  const [lessons, setLessons] = useState<LessonInterface[]>([]);
+
   const [sub_topics, setSubTopics] = useState<any[]>([]);
   const [chatLog, setChatLog] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [startedLessonId, setStartedLessonId] = useState<string|undefined>();
+
   const [isBegunLesson, setIsBegunLesson] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("");
   const [selectedSubTopic, setSelectedSubTopic] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   async function onSubmit(event: any) {
     event.preventDefault();
     console.log("=========================================================");
@@ -69,6 +78,26 @@ export default function Page() {
     // setChatLog(prevChatLog => {
     //   return [ { type: 'bot', message: "# Greeting and Introduction\n\nHello and welcome to your AI Tutor session on Linear Algebra! In this lesson, we will focus on Linear Equations, an important topic in Linear Algebra. Understanding linear equations is crucial as they form the foundation for solving systems of equations and can be used in various real-world applications. Let's dive in!\n\n# Topic Explanation: Linear Equations\n\nA linear equation is an equation of the form:\n\nax + by + cz + ... = d\n\nHere, x, y, z, and so on, represent the variables, and a, b, c, and so on, represent the coefficients. The variables may have different coefficients, but they are raised only to the first power (no exponents). The equation can have any number of variables.\n\nFor example, a simple linear equation in one variable (x) would be:\n\n2x + 3 = 7\n\nIn this case, the coefficient of x is 2, and the constant term is 3. Solving this equation involves finding the value of x that satisfies the equation.\n\n# Understanding Check\n\nNow that we have covered the basics of linear equations, let's make sure you understand the concept. Can you explain, in your own words, what a linear equation is? If you have any questions or need further clarification, please let me know before we proceed.\n\n# Testing Understanding: Question\n\n1. Solve the equation: 3x - 5 = 16\n\nTake your time to solve the equation. Once you have an answer, please let me know if you feel comfortable with solving linear equations.\n\n# Analysis and Feedback\n\nNow let's analyze the answer to question 1. The given equation is 3x - 5 = 16.\n\nSolution:\n```\n3x - 5 = 16\nAdd 5 to both sides:\n3x = 16 + 5 = 21\nDivide both sides by 3:\nx = 21/3 = 7\n```\n\nThe solution to the equation is x = 7.\n\nBased on your response, if you arrived at the correct answer, well done! You have a good understanding of solving linear equations. If you encountered any difficulties along the way or made any mistakes, don't worry! Solving linear equations takes practice, and we can work together to strengthen your skills.\n\nLet me know if you have any questions or need further clarification on the concept of solving linear equations.\n\n# Conclusion\n\nIn this lesson, we explored the concept of linear equations, which are fundamental to linear algebra. We learned that linear equations are equations in which the variables are raised only to the first power, and the coefficients determine the relationship between the variables. We also discussed solving linear equations by isolating the variable.\n\nI hope this lesson has helped you gain a better understanding of linear equations. If you have any more questions or would like to further explore this topic or any other topics in linear algebra, feel free to ask!" }];
     // })
+
+    async function getAllLessons() {
+      try {
+        const response = await axios.get("/api/admin/lesson");
+        console.log(
+          "========================================================="
+        );
+        console.log("response", response);
+        console.log(
+          "========================================================="
+        );
+        setLessons(response.data.data);
+      } catch (error) {
+        console.log("error 45", error);
+        console.log(
+          "========================================================="
+        );
+      }
+    }
+    getAllLessons();
   }, []);
   const beginChat = (data: any) => {
     const url = "http://127.0.0.1:8000/begin_chat";
@@ -172,40 +201,6 @@ export default function Page() {
         console.log(error);
       });
   };
-  // const sendMessage = (message:any) => {
-  //   const url = '/api/chat';
-
-  //   const data = {
-  //     model: "gpt-3.5-turbo-0301",
-  //     messages: [{ "role": "user", "content": message }]
-  //   };
-
-  //   setIsLoading(true);
-  //   axios.post(url, data).then((response) => {
-  //     setChatLog(prevChatLog => {
-  //       return [...prevChatLog, { type: 'bot', message: response.data.choices[0].message.content }];
-  //     })
-
-  //     setIsLoading(false);
-  //   }).catch((error) => {
-  //     setIsLoading(false);
-  //     console.log(error);
-  //   })
-  // }
-
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
-
-    setChatLog((prevChatLog) => [
-      ...prevChatLog,
-      { type: "user", message: inputValue },
-    ]);
-
-    sendChat(inputValue);
-    // sendMessage(inputValue);
-
-    setInputValue("");
-  };
 
   useEffect(() => {
     async function getAllFilters() {
@@ -235,14 +230,6 @@ export default function Page() {
     }
     getAllFilters();
   }, []);
-  // const changger  = async(message:any)=>{
-
-  //   const content = await unified. unified()
-  //     .use(parse)
-  //     .use(remark2react)
-  //     .processSync(message).result;
-  // return content
-  // }
 
   const bgContainerStyle = {
     backgroundImage: `url('/lessons_bg.png')`,
@@ -250,6 +237,18 @@ export default function Page() {
     height: "68%", // Set the height as needed
   };
 
+  const startLesson = (id: string|undefined) => {
+    setStartedLessonId(id);
+    setIsModalOpen(true);
+  };
+  const changger  = async(message:any)=>{
+
+    const content = await unified. unified()
+      .use(parse)
+      // .use(remark2react)
+      .processSync(message).result;
+  return content
+  }
   return (
     <>
       <div
@@ -313,49 +312,55 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="flex flex-wrap">
-            <div className=" w-1/4 p-6 relative place-items-center object-center content-center items-center py-10 mt-10 flex flex-col bg-white border border-gray-200 rounded-lg  shadow-md ">
-              <div className="absolute leading-6 -top-8 text-center  justify-center bg-[#FF9800] rounded-full h-16 w-16">
-                <p className="text-white font-[400] text-[12px] pt-2 ">
-                  Lesson
-                </p>
-                <p className="text-white font-[400] text-[26px]">1</p>
-              </div>
-              <p className="mb-3  text-gray-700  font-[400] text-[16px]">
-                Introduction to the 4 operations with Algebra
-              </p>
-
-              <div className="py-5 space-y-3">
-                <span className="text-[#7160A8]">Top Students</span>
-                <div className="flex">
-                  <Image
-                    src={"/Avatars/1.png"}
-                    width={40}
-                    height={40}
-                    alt="new"
-                  />
-                  <Image
-                    src={"/Avatars/2.png"}
-                    width={40}
-                    height={40}
-                    alt="new"
-                  />
-                  <Image
-                    src={"/Avatars/3.png"}
-                    width={40}
-                    height={40}
-                    alt="new"
-                  />
-                </div>
-              </div>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                type={"button"}
-                className="inline-flex w-full  justify-center  px-3 py-2 text-sm font-medium  rounded-2xl text-white bg-gradient-to-r from-[#FFCB17] to-[#FBB21A]  focus:ring-4 focus:outline-none focus:ring-blue-300 "
-              >
-                Start Lesson
-              </button>
-            </div>
+          <div className="flex flex-wrap space-x-4">
+            {lessons.length
+              ? lessons?.map((lesson, i) => (
+                  <div
+                    key={i}
+                    className=" w-1/4 p-6 relative place-items-center object-center content-center items-center py-10 mt-10 flex flex-col bg-white border border-gray-200 rounded-lg  shadow-md "
+                  >
+                    <div className="absolute leading-6 -top-8 text-center  justify-center bg-[#FF9800] rounded-full h-16 w-16">
+                      <p className="text-white font-[400] text-[12px] pt-2 ">
+                        Lesson
+                      </p>
+                      <p className="text-white font-[400] text-[26px]">{i+1}</p>
+                    </div>
+                    <p className="mb-3  text-gray-700  font-[400] text-[16px]">
+                      {lesson.title}
+                    </p>
+                    <div className="py-5 space-y-3">
+                      <span className="text-[#7160A8]">Top Students</span>
+                      <div className="flex">
+                        <Image
+                          src={"/Avatars/1.png"}
+                          width={40}
+                          height={40}
+                          alt="new"
+                        />
+                        <Image
+                          src={"/Avatars/2.png"}
+                          width={40}
+                          height={40}
+                          alt="new"
+                        />
+                        <Image
+                          src={"/Avatars/3.png"}
+                          width={40}
+                          height={40}
+                          alt="new"
+                        />
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => startLesson(lesson._id)}
+                      type={"button"}
+                      className="inline-flex w-full  justify-center  px-3 py-2 text-sm font-medium  rounded-2xl text-white bg-gradient-to-r from-[#FFCB17] to-[#FBB21A]  focus:ring-4 focus:outline-none focus:ring-blue-300 "
+                    >
+                      Start Lesson
+                    </button>
+                  </div>
+                ))
+              : null}
           </div>
         </div>
       </div>
@@ -370,13 +375,14 @@ export default function Page() {
               width={300}
               height={200}
               onClick={() => setIsModalOpen(!isModalOpen)}
-
               alt={"ehadin"}
             />
             <div className="flex flex-col bg-white px-10  rounded-b text-center  items-center">
               <h3 className="py-4 font-bold">Lesson Summary</h3>
               <div className=" w-full ">
-                <span>
+{/* {changger(lessons.find((e)=>e._id===startedLessonId)?.summary)} */}
+                {lessons.find((e)=>e._id===startedLessonId)?.summary}
+                {/* <span>
                   Are you sure
                   <ul>
                     <li>addtion that the quic</li>
@@ -385,17 +391,18 @@ export default function Page() {
                     <li>addtion that the quic</li>
                     <li>addtion that the quic</li>
                   </ul>
-                </span>
+                </span> */}
                 <div className="flex flex-col py-4 bg-full sm:flex-row justify-center gap-8  align-center">
                   {/* <button
               onClick={()=>setIsModalOpen(true)}
                 type={"button"}
                 > */}
-                  <Link href={'/home'}
+                  <Link
+                    href={"/home?id="+lessons.find((e)=>e._id===startedLessonId)?._id}
                     className="inline-flex w-full  justify-center  px-3 py-2 text-sm font-medium  rounded-2xl text-white bg-gradient-to-r from-[#FFCB17] to-[#FBB21A]  focus:ring-4 focus:outline-none focus:ring-blue-300 "
                   >
                     Proceed to Lesson
-                  </Link >
+                  </Link>
                 </div>
               </div>
             </div>

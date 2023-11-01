@@ -22,7 +22,7 @@ export default function Page() {
   return (
     // <div className="justify-center h-screen p-3 text-white ">
     <>
-                <Link href="/home">
+                <Link href="/lesson">
 
       <div style={containerStyle}>
 
