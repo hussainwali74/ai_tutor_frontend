@@ -40,7 +40,7 @@ export default function Page() {
         setIsLoading(true);
         setIsBegunLesson(true);
 
-        const url = process.env.BASE_URL_FRONTEND + "/api/admin/lesson";
+        const url = "/api/admin/lesson";
         setIsLoading(true);
         axios
             .get(url, { params: { id: params.get('id') } })
