@@ -8,7 +8,6 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { LessonInterface } from "../model/lesson";
-import unified from "unified";
 import parse from "remark-parse";
 import remark2react from "remark-react";
 
@@ -241,14 +240,7 @@ export default function Page() {
     setStartedLessonId(id);
     setIsModalOpen(true);
   };
-  const changger  = async(message:any)=>{
 
-    const content = await unified. unified()
-      .use(parse)
-      // .use(remark2react)
-      .processSync(message).result;
-  return content
-  }
   return (
     <>
       <div
