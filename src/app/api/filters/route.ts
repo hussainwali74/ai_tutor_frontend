@@ -6,6 +6,7 @@ import FilterModel, {
     FilterInterface,
 } from "../../model/filter";
 import { model, connect } from "mongoose";
+import { mongo_atlas_connection_str } from "@/app/lib/db";
 
 
 export async function POST(req: Request) {
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
             return new NextResponse("messages required", { status: 400 });
         }
 
-        await connect(process.env.MONGO_ATLAS_URL + "/newdb");
+        await connect(mongo_atlas_connection_str);
         let q: FilterInterface = {
             subject: payload.subject,
             topic: payload.topic,
@@ -44,7 +45,7 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
     try {
-        await connect(process.env.MONGO_ATLAS_URL + "/newdb");
+        await connect(mongo_atlas_connection_str);
         const all: FilterInterface[] = await FilterModel.find({});
 
         return NextResponse.json({ data: all, status: 200 });
@@ -58,7 +59,7 @@ export async function GET(req: Request) {
 
 export async function DELETE(req: NextRequest) {
     try {
-        await connect(process.env.MONGO_ATLAS_URL + "/newdb");
+        await connect(mongo_atlas_connection_str);
         const resp = await FilterModel.findByIdAndDelete(
             req.nextUrl.searchParams.get("id")
         );

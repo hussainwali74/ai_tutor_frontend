@@ -9,6 +9,7 @@ import QuestionModel, {
 } from "../../model/question";
 import { model, connect } from "mongoose";
 import { ImageInterface } from "@/app/model/image";
+import { mongo_atlas_connection_str } from "@/app/lib/db";
 
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
         console.log('response', response);
         console.log('=========================================================')
         // const resp = JSON.parse(response.data.choices[0].message?.content as string)
-        await connect(process.env.MONGO_ATLAS_URL + "/newdb")
+        await connect(mongo_atlas_connection_str)
         let q: ImageInterface = {
             prompt,
             image_url: response.data.data[0].url || "no response from gpt",
@@ -56,7 +57,7 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
     try {
-        await connect(process.env.MONGO_ATLAS_URL + "/newdb");
+        await connect(mongo_atlas_connection_str);
         const all = await QuestionModel.find({});
         return NextResponse.json({ data: all, status: 200 });
     } catch (error) {
@@ -68,7 +69,7 @@ export async function GET(req: Request) {
 }
 export async function DELETE(req: NextRequest) {
     try {
-        await connect(process.env.MONGO_ATLAS_URL + "/newdb");
+        await connect(mongo_atlas_connection_str);
         const resp = await QuestionModel.findByIdAndDelete(
             req.nextUrl.searchParams.get("id")
         );

@@ -3,36 +3,28 @@ import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 
 import { model, connect, Types } from "mongoose";
 import SubjectModel, { SubjectInterface, } from "@/app/model/subject";
+import { mongo_atlas_connection_str } from "@/app/lib/db";
 
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        console.log('==========================================================')
-        console.log('body', body);
-        console.log('=========================================================')
 
         const { payload } = body
         if (!payload) {
             return new NextResponse("messages required", { status: 400 });
         }
 
-        // await connect(process.env.MONGO_ATLAS_URL+"/newdb");
+        await connect(mongo_atlas_connection_str);
+
         let q: SubjectInterface = {
             title: payload.subject,
         };
 
-        console.log('=========================================================')
-        console.log('q', q);
-        console.log('=========================================================')
-
-        let newLesson = new SubjectModel(q);
-        await newLesson.save();
+        let newSubject = new SubjectModel(q);
+        await newSubject.save();
 
         const all: SubjectInterface[] = await SubjectModel.find({});
-        console.log('=========================================================')
-        console.log('all', all);
-        console.log('=========================================================')
         return NextResponse.json({ data: all, status: 200 });
 
     } catch (error) {
@@ -45,7 +37,7 @@ export async function GET(req: Request) {
 
     try {
 
-        // await connect(process.env.MONGO_ATLAS_URL+"/newdb");
+        await connect(mongo_atlas_connection_str);
 
         const subjects: SubjectInterface[] = await SubjectModel.find();
 
@@ -60,8 +52,7 @@ export async function GET(req: Request) {
 
 export async function DELETE(req: NextRequest) {
     try {
-        // await connect(process.env.MONGO_ATLAS_URL+"/newdb");
-
+        await connect(mongo_atlas_connection_str);
         const resp = await SubjectModel.findByIdAndDelete(req.nextUrl.searchParams.get("id"));
         console.log("=========================================================");
         console.log("resp", resp);

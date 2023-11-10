@@ -3,6 +3,7 @@ import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 
 import { model, connect, Types } from "mongoose";
 import TopicModel, { TopicInterface, } from "@/app/model/topic";
+import { mongo_atlas_connection_str } from "@/app/lib/db";
 
 
 export async function POST(req: Request) {
@@ -16,8 +17,8 @@ export async function POST(req: Request) {
         if (!payload) {
             return new NextResponse("messages required", { status: 400 });
         }
-
-        await connect(process.env.MONGO_ATLAS_URL + "/newdb");
+        const x = await connect(mongo_atlas_connection_str)
+        await connect(mongo_atlas_connection_str);
         const topic: any = await TopicModel.find({ id: payload.topic })
         console.log('=========================================================')
         console.log('topic', topic);
@@ -53,7 +54,7 @@ export async function GET(req: NextRequest) {
         console.log('=========================================================')
         // const {topic}:Partial<TopicInterface> = await  req.json();
 
-        await connect(process.env.MONGO_ATLAS_URL + "/newdb");
+        await connect(mongo_atlas_connection_str);
 
         // if (topic && Types.ObjectId.isValid(topic)){
         const lessons: TopicInterface[] = await TopicModel.find();
@@ -76,6 +77,8 @@ export async function GET(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
     try {
+        await connect(mongo_atlas_connection_str);
+
         const _id = req.nextUrl.searchParams.get("id");
         if (_id && Types.ObjectId.isValid(_id)) {
             const topic: TopicInterface | null = await TopicModel.findById(_id)

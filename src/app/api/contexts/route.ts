@@ -7,6 +7,7 @@ import ContextModel, {
 } from "../../model/context";
 import { model, connect } from "mongoose";
 import { Context } from "vm";
+import { mongo_atlas_connection_str } from "@/app/lib/db";
 
 
 export async function POST(req: Request) {
@@ -16,7 +17,7 @@ export async function POST(req: Request) {
             return new NextResponse("data is required required", { status: 400 });
         }
 
-        await connect(process.env.MONGO_ATLAS_URL + "/newdb");
+        await connect(mongo_atlas_connection_str);
         let q: ContextInterface = {
             subject: body.subject,
             context: body.context,
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
     try {
-        await connect(process.env.MONGO_ATLAS_URL + "/newdb");
+        await connect(mongo_atlas_connection_str);
         const all: ContextInterface[] = await ContextModel.find({});
 
         return NextResponse.json({ data: all, status: 200 });
@@ -52,7 +53,7 @@ export async function GET(req: Request) {
 
 export async function DELETE(req: NextRequest) {
     try {
-        await connect(process.env.MONGO_ATLAS_URL + "/newdb");
+        await connect(mongo_atlas_connection_str);
         const resp = await ContextModel.findByIdAndDelete(
             req.nextUrl.searchParams.get("id")
         );
