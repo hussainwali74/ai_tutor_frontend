@@ -40,6 +40,10 @@ export default function Page() {
         setIsLoading(true);
         setIsBegunLesson(true);
 
+        console.log('-----------------------------------------------------')
+        console.log(`process.env.BASE_URL :>>`, process.env.BASE_URL)
+        console.log('-----------------------------------------------------')
+
         const url = "/api/admin/lesson";
         setIsLoading(true);
         axios
