@@ -269,7 +269,7 @@ export default function Page() {
 
                 setFilters(response.data.data);
             } catch (error) {
-                console.log("error getting filters 45", error);
+                console.log("error getting getAllFilters 45", error);
             }
         }
         getAllFilters();

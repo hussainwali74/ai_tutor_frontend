@@ -224,7 +224,7 @@ export default function Page() {
 
         setFilters(response.data.data);
       } catch (error) {
-        console.log("error getting filters 45", error);
+          console.log("error getting filters lessons page.tsx 45", error);
       }
     }
     getAllFilters();
