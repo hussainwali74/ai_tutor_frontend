@@ -76,55 +76,11 @@ export default function Page() {
 
     }, [params.get('id')]);
 
-
-    async function onSubmit(event: any) {
-        event.preventDefault();
-        console.log("=========================================================");
-        console.log("topic", selectedTopic);
-        console.log("=========================================================");
-        // const subject = data.get("subject");
-        // const topic = data.get("topic");
-        // const sub_topic = data.get("sub_topic");
-        if (selectedSubject == "Choose a Subject") {
-            alert("please select a subject");
-            return;
-        }
-        if (!selectedTopic || selectedTopic == "Choose a Topic") {
-            alert("please select a selectedTopic");
-            return;
-        }
-        if (!selectedSubTopic || selectedSubTopic == "Choose a sub selectedTopic") {
-            alert("please select a sub_topic");
-            return;
-        }
-        try {
-            setIsLoading(true);
-            setIsBegunLesson(true);
-
-            const data = {
-                subject: selectedSubject,
-                topic: selectedTopic,
-                subtopic: selectedSubTopic,
-            };
-
-            // startSendMessage()
-            beginChat(data);
-        } catch (error) {
-            console.log("========== ", error);
-        } finally {
-            setIsLoading(true);
-            // router.refresh();
-        }
-    }
     const headers = {
         "Content-Type": "application/json",
         accept: "application/json",
     };
-    useEffect(() => {
-        // setChatLog(prevChatLog => {
-        //   return [ { type: 'bot', message: "# Greeting and Introduction\n\nHello and welcome to your AI Tutor session on Linear Algebra! In this lesson, we will focus on Linear Equations, an important topic in Linear Algebra. Understanding linear equations is crucial as they form the foundation for solving systems of equations and can be used in various real-world applications. Let's dive in!\n\n# Topic Explanation: Linear Equations\n\nA linear equation is an equation of the form:\n\nax + by + cz + ... = d\n\nHere, x, y, z, and so on, represent the variables, and a, b, c, and so on, represent the coefficients. The variables may have different coefficients, but they are raised only to the first power (no exponents). The equation can have any number of variables.\n\nFor example, a simple linear equation in one variable (x) would be:\n\n2x + 3 = 7\n\nIn this case, the coefficient of x is 2, and the constant term is 3. Solving this equation involves finding the value of x that satisfies the equation.\n\n# Understanding Check\n\nNow that we have covered the basics of linear equations, let's make sure you understand the concept. Can you explain, in your own words, what a linear equation is? If you have any questions or need further clarification, please let me know before we proceed.\n\n# Testing Understanding: Question\n\n1. Solve the equation: 3x - 5 = 16\n\nTake your time to solve the equation. Once you have an answer, please let me know if you feel comfortable with solving linear equations.\n\n# Analysis and Feedback\n\nNow let's analyze the answer to question 1. The given equation is 3x - 5 = 16.\n\nSolution:\n```\n3x - 5 = 16\nAdd 5 to both sides:\n3x = 16 + 5 = 21\nDivide both sides by 3:\nx = 21/3 = 7\n```\n\nThe solution to the equation is x = 7.\n\nBased on your response, if you arrived at the correct answer, well done! You have a good understanding of solving linear equations. If you encountered any difficulties along the way or made any mistakes, don't worry! Solving linear equations takes practice, and we can work together to strengthen your skills.\n\nLet me know if you have any questions or need further clarification on the concept of solving linear equations.\n\n# Conclusion\n\nIn this lesson, we explored the concept of linear equations, which are fundamental to linear algebra. We learned that linear equations are equations in which the variables are raised only to the first power, and the coefficients determine the relationship between the variables. We also discussed solving linear equations by isolating the variable.\n\nI hope this lesson has helped you gain a better understanding of linear equations. If you have any more questions or would like to further explore this topic or any other topics in linear algebra, feel free to ask!" }];
-        // })
-    }, []);
+
     const beginChat = (data: any) => {
         console.log('=========================================================')
         console.log('begin chat data', data);
@@ -200,9 +156,16 @@ export default function Page() {
             });
     };
     const sendChat = (message: any) => {
+        1
         const url = process.env.BASE_URL + "/chat?message=" + message;
 
         // const data = {messages:  message };
+
+        console.log('-----------------------------------------------------')
+        console.log(`process.env.BASE_URL :>>`, process.env.BASE_URL)
+        console.log(`process.env.OPENAI_API_KEY :>>`, process.env.OPENAI_API_KEY)
+        console.log('-----------------------------------------------------')
+
         console.log("=========================================================");
         console.log("message", message);
         console.log("=========================================================");
@@ -274,14 +237,7 @@ export default function Page() {
         }
         getAllFilters();
     }, []);
-    // const changger  = async(message:any)=>{
 
-    //   const content = await unified. unified()
-    //     .use(parse)
-    //     .use(remark2react)
-    //     .processSync(message).result;
-    // return content
-    // }
 
     const containerStyle = {
         backgroundImage: `url('/chat_bg.png')`,
@@ -290,7 +246,6 @@ export default function Page() {
     };
 
     return (
-        // <div className="justify-center h-screen p-3 text-white ">
         <>
             <div className="flex  flex-col">
                 <div className="flex justify-between p-3 bg-[#3D316F]">
@@ -348,14 +303,7 @@ export default function Page() {
                                     </div>
                                 </div>
                             ) : null}
-                            {/* <div
-                        key={chatLog.length}
-                        className="relative left-[2rem]  "
-                      >
-                        <div className="bg-gray-300 rounded-lg p-4 text-white w-[4rem]">
-                          <TypingAnimation />
-                        </div>
-                      </div> */}
+
                             <form
                                 onSubmit={handleSubmit}
                                 className=" fixed bottom-1  w-[76%]  flex-none p-6 "
@@ -372,7 +320,7 @@ export default function Page() {
                                         type="submit"
                                         className="rounded-lg px-4 py-2 bg-white "
                                     >
-                                        <Image
+                                        <Image 
                                             src={"/icons/send.png"}
                                             alt="heavy"
                                             width={48}
