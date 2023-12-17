@@ -27,7 +27,7 @@ export default function Page() {
     const [lessonId, setLessonId] = useState<string | null>();
     const [lesson, setLesson] = useState<LessonInterface | null>();
     const [chatLog, setChatLog] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [isBegunLesson, setIsBegunLesson] = useState(false);
     const [inputValue, setInputValue] = useState("");
     const [selectedSubject, setSelectedSubject] = useState("");
@@ -290,7 +290,6 @@ export default function Page() {
                         <div className="flex flex-col w-full">
                             {isLoading && (
                                 <div
-                                    key={chatLog.length}
                                     className="relative left-[2rem] top-[2rem] -bottom-[38rem] "
                                 >
                                     <div className="bg-gray-300 rounded-lg p-4 text-white w-[4rem]">
@@ -310,6 +309,15 @@ export default function Page() {
                                                 )}
                                             </div>
                                         ))}
+                                        {isLoading && (
+                                            <div
+                                                className="relative left-[2rem] -top-[1rem] -bottom-[38rem] "
+                                            >
+                                                <div className="bg-gray-300 rounded-lg p-4 text-white w-[4rem]">
+                                                    <TypingAnimation />
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             ) : null}
