@@ -27,7 +27,7 @@ export default function Page() {
     const [lessonId, setLessonId] = useState<string | null>();
     const [lesson, setLesson] = useState<LessonInterface | null>();
     const [chatLog, setChatLog] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [isBegunLesson, setIsBegunLesson] = useState(false);
     const [inputValue, setInputValue] = useState("");
     const [selectedSubject, setSelectedSubject] = useState("");
@@ -50,7 +50,7 @@ export default function Page() {
             .get(url, { params: { id: params.get('id') } })
             .then((response) => {
                 console.log('=========================================================')
-                console.log('response', response);
+                console.log('response use effect inint 53 home ', response);
                 console.log('=========================================================')
                 if (response.data.data) {
                     setLesson(response.data.data)
@@ -80,25 +80,61 @@ export default function Page() {
 
     }, [params.get('id')]);
 
+
+    useEffect(() => {
+        async function getAllFilters() {
+            try {
+                const response = await axios.get("/api/filters");
+
+                const topics_set = new Set(
+                    response.data.data.map((x: FilterInterface) => x.topic)
+                );
+                const subject_set = new Set(
+                    response.data.data.map((x: FilterInterface) => x.subject)
+                );
+                const subject_: any[] = Array.from(subject_set);
+                setSubjects(subject_);
+                const topics_: any[] = Array.from(topics_set);
+                setTopics(topics_);
+                const sub_topic_set = new Set(
+                    response.data.data.map((x: FilterInterface) => x.sub_topic)
+                );
+                const sub_topic_: any[] = Array.from(sub_topic_set);
+                setSubTopics(sub_topic_);
+
+                setFilters(response.data.data);
+            } catch (error) {
+                console.log("error getting getAllFilters 45", error);
+            }
+        }
+        getAllFilters();
+    }, []);
+
     const headers = {
         "Content-Type": "application/json",
         accept: "application/json",
     };
 
     const beginChat = (data: any) => {
-        console.log('=========================================================')
-        console.log('begin chat data', data);
-        const url = process.env.BASE_URL + "/begin_chat";
-        console.log('begin chat url', url);
-        console.log('=========================================================')
+        const url = "api/admin/begin_chat";
         setIsLoading(true);
+
+        console.log('-----------------------------------------------------')
+        console.log(`url in beginChat :>>`, url)
+        console.log('-----------------------------------------------------')
+
         axios
             .post(url, data, { headers: headers })
             .then((response) => {
+
+                console.log('-----------------------------------------------------')
+                console.log(`response beginChat :>>`, response)
+                console.log('-----------------------------------------------------')
+
                 setChatLog((prevChatLog) => {
                     return [
                         ...prevChatLog,
-                        { type: "bot", message: response.data.message },
+                        { type: "bot", message: response.data.data.message },
                     ];
                 });
 
@@ -159,11 +195,10 @@ export default function Page() {
                 console.log(error);
             });
     };
-    const sendChat = (message: any) => {
-        1
-        const url = process.env.BASE_URL + "/chat?message=" + message;
 
-        // const data = {messages:  message };
+    const sendChat = (message: any) => {
+
+        const url = process.env.BASE_URL + "/chat?message=" + message;
 
         console.log('-----------------------------------------------------')
         console.log(`process.env.BASE_URL :>>`, process.env.BASE_URL)
@@ -213,36 +248,6 @@ export default function Page() {
         setInputValue("");
     };
 
-    useEffect(() => {
-        async function getAllFilters() {
-            try {
-                const response = await axios.get("/api/filters");
-
-                const topics_set = new Set(
-                    response.data.data.map((x: FilterInterface) => x.topic)
-                );
-                const subject_set = new Set(
-                    response.data.data.map((x: FilterInterface) => x.subject)
-                );
-                const subject_: any[] = Array.from(subject_set);
-                setSubjects(subject_);
-                const topics_: any[] = Array.from(topics_set);
-                setTopics(topics_);
-                const sub_topic_set = new Set(
-                    response.data.data.map((x: FilterInterface) => x.sub_topic)
-                );
-                const sub_topic_: any[] = Array.from(sub_topic_set);
-                setSubTopics(sub_topic_);
-
-                setFilters(response.data.data);
-            } catch (error) {
-                console.log("error getting getAllFilters 45", error);
-            }
-        }
-        getAllFilters();
-    }, []);
-
-
     const containerStyle = {
         backgroundImage: `url('/chat_bg.png')`,
         height: "91vh", // Set the height as needed
@@ -279,12 +284,23 @@ export default function Page() {
                 </div>
 
                 <div className="flex flex-row bg-gray-100">
-                    <div className="w-[70%] px-2 space-y-2 h-screen overflow-auto"
+                    <div className="w-[70%] px-2 space-y-2 h-screen overflow-hidden"
                         style={containerStyle}
                     >
                         <div className="flex flex-col w-full">
+                            {isLoading && (
+                                <div
+                                    key={chatLog.length}
+                                    className="relative left-[2rem] top-[2rem] -bottom-[38rem] "
+                                >
+                                    <div className="bg-gray-300 rounded-lg p-4 text-white w-[4rem]">
+                                        <TypingAnimation />
+                                    </div>
+                                </div>
+                            )}
+
                             {chatLog.length ? (
-                                <div className="flex-grow pl-6 pr-1 mt-5 fixed mb-20 h-[76%] w-[76%] overflow-y-auto  ">
+                                <div className="flex-grow pl-6 pr-1 mt-5 fixed mb-20 h-[76%] w-[76%] overflow-y-scroll  ">
                                     <div className="flex flex-col space-y-4 px-10  ">
                                         {chatLog.map((message, index) => (
                                             <div key={index}>
@@ -294,16 +310,6 @@ export default function Page() {
                                                 )}
                                             </div>
                                         ))}
-                                        {isLoading && (
-                                            <div
-                                                key={chatLog.length}
-                                                className="relative left-[2rem] top-[2rem] -bottom-[38rem] "
-                                            >
-                                                <div className="bg-gray-300 rounded-lg p-4 text-white w-[4rem]">
-                                                    <TypingAnimation />
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
                             ) : null}
@@ -324,7 +330,7 @@ export default function Page() {
                                         type="submit"
                                         className="rounded-lg px-4 py-2 bg-white "
                                     >
-                                        <Image 
+                                        <Image
                                             src={"/icons/send.png"}
                                             alt="heavy"
                                             width={48}
