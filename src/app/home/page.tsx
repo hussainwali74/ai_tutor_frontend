@@ -1,6 +1,4 @@
 "use client";
-import { useRouter } from "next/router";
-import { ChatCompletionRequestMessage } from "openai";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { FilterInterface } from "../model/filter";
@@ -8,8 +6,6 @@ import TypingAnimation from "../components/TypingAnimation";
 
 import React from "react";
 
-import ReactDom from "react-dom";
-import Markdown from "react-markdown";
 import { ChatMessage } from "../components/chat-message";
 import { Separator } from "../components/ui/separator";
 
@@ -118,18 +114,9 @@ export default function Page() {
     const beginChat = (data: any) => {
         const url = "api/admin/begin_chat";
         setIsLoading(true);
-
-        console.log('-----------------------------------------------------')
-        console.log(`url in beginChat :>>`, url)
-        console.log('-----------------------------------------------------')
-
         axios
             .post(url, data, { headers: headers })
             .then((response) => {
-
-                console.log('-----------------------------------------------------')
-                console.log(`response beginChat :>>`, response)
-                console.log('-----------------------------------------------------')
 
                 setChatLog((prevChatLog) => {
                     return [
@@ -197,32 +184,15 @@ export default function Page() {
     };
 
     const sendChat = (message: any) => {
-
-        const url = process.env.BASE_URL + "/chat?message=" + message;
-
-        console.log('-----------------------------------------------------')
-        console.log(`process.env.BASE_URL :>>`, process.env.BASE_URL)
-        console.log(`process.env.OPENAI_API_KEY :>>`, process.env.OPENAI_API_KEY)
-        console.log('-----------------------------------------------------')
-
-        console.log("=========================================================");
-        console.log("message", message);
-        console.log("=========================================================");
+        const url = "api/admin/chat?message=" + message;
         setIsLoading(true);
         axios
             .post(url, { headers: headers })
             .then((response) => {
-                console.log(
-                    "========================================================="
-                );
-                console.log("response", response);
-                console.log(
-                    "========================================================="
-                );
                 setChatLog((prevChatLog) => {
                     return [
                         ...prevChatLog,
-                        { type: "bot", message: response.data.message },
+                        { type: "bot", message: response.data.data.message },
                     ];
                 });
 
@@ -284,14 +254,10 @@ export default function Page() {
                 </div>
 
                 <div className="flex flex-row bg-gray-100">
-                    <div className="w-[70%] px-2 space-y-2 h-screen overflow-hidden"
-                        style={containerStyle}
-                    >
+                    <div className="w-[70%] px-2 space-y-2 h-screen overflow-hidden" style={containerStyle}>
                         <div className="flex flex-col w-full">
                             {isLoading && (
-                                <div
-                                    className="relative left-[2rem] top-[2rem] -bottom-[38rem] "
-                                >
+                                <div className="relative left-[2rem] top-[2rem] -bottom-[38rem]">
                                     <div className="bg-gray-300 rounded-lg p-4 text-white w-[4rem]">
                                         <TypingAnimation />
                                     </div>
@@ -299,7 +265,7 @@ export default function Page() {
                             )}
 
                             {chatLog.length ? (
-                                <div className="flex-grow pl-6 pr-1 mt-5 fixed mb-20 h-[76%] w-[76%] overflow-y-scroll  ">
+                                <div className="flex-grow pl-6 pr-1 mt-5 fixed mb-20 h-[76%] w-[76%] overflow-y-scroll">
                                     <div className="flex flex-col space-y-4 px-10  ">
                                         {chatLog.map((message, index) => (
                                             <div key={index}>
@@ -311,7 +277,7 @@ export default function Page() {
                                         ))}
                                         {isLoading && (
                                             <div
-                                                className="relative left-[2rem] -top-[1rem] -bottom-[38rem] "
+                                                className="relative left-[2rem] -top-[1rem] -bottom-[38rem]"
                                             >
                                                 <div className="bg-gray-300 rounded-lg p-4 text-white w-[4rem]">
                                                     <TypingAnimation />
@@ -324,7 +290,7 @@ export default function Page() {
 
                             <form
                                 onSubmit={handleSubmit}
-                                className=" fixed bottom-1  w-[76%]  flex-none p-6 "
+                                className="fixed bottom-1 w-[76%] flex-none p-6"
                             >
                                 <div className="flex rounded-xl border">
                                     <input
