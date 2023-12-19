@@ -1,6 +1,6 @@
 "use client";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FilterInterface } from "../model/filter";
 import TypingAnimation from "../components/TypingAnimation";
 
@@ -29,6 +29,13 @@ export default function Page() {
     const [selectedSubject, setSelectedSubject] = useState("");
     const [selectedTopic, setSelectedTopic] = useState("");
     const [selectedSubTopic, setSelectedSubTopic] = useState("");
+
+    const lastMessageRef = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+        if (lastMessageRef.current) {
+            lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [chatLog]);
 
     const params = useSearchParams()
     useEffect(() => {
@@ -268,7 +275,7 @@ export default function Page() {
                                 <div className="flex-grow pl-6 pr-1 mt-5 fixed mb-20 h-[76%] w-[76%] overflow-y-scroll">
                                     <div className="flex flex-col space-y-4 px-10  ">
                                         {chatLog.map((message, index) => (
-                                            <div key={index}>
+                                            <div key={index} ref={index === chatLog.length - 1 ? lastMessageRef : null}>
                                                 <ChatMessage message={message} />
                                                 {index < message.length - 1 && (
                                                     <Separator className="my-4 md:my-8" />
