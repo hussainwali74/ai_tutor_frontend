@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@deepgram/sdk";
 import fs from "fs";
-
+import path from "path";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -24,7 +24,14 @@ export async function POST(req: Request) {
       const audioBuffer = await getAudioBuffer(stream);
 
       // STEP 5: Write the audio buffer to a file
-      const audioFilePath = "public/audio/output.mp3";
+      let audioFilePath = "public/audio";
+  
+      // Ensure the directory exists
+      const dir = path.dirname(audioFilePath);
+      if (!fs.existsSync(dir)) {
+         fs.mkdirSync(dir, { recursive: true });
+      }
+      audioFilePath = path.join(audioFilePath,'output.mp3')
       fs.writeFileSync(audioFilePath, audioBuffer);
       return NextResponse.json({
         success: true,
