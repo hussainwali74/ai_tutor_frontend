@@ -24,14 +24,14 @@ export async function POST(req: Request) {
       const audioBuffer = await getAudioBuffer(stream);
 
       // STEP 5: Write the audio buffer to a file
-      let audioFilePath = "public/audio";
-  
+      const audioFilePath = "public/audio/output.mp3";
+
       // Ensure the directory exists
       const dir = path.dirname(audioFilePath);
       if (!fs.existsSync(dir)) {
-         fs.mkdirSync(dir, { recursive: true });
+        fs.mkdirSync(dir, { recursive: true });
       }
-      audioFilePath = path.join(audioFilePath,'output.mp3')
+
       fs.writeFileSync(audioFilePath, audioBuffer);
       return NextResponse.json({
         success: true,
