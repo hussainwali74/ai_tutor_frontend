@@ -52,7 +52,7 @@ jobs:
 
       - name: Deploy
         run: |-
-          echo '${{ secrets.GCLOUD_STORAGE_SERVICE_ACCOUNT_KEY }}' | jq -c '.' > keyfile.json
+         echo '${{ secrets.GCLOUD_STORAGE_SERVICE_ACCOUNT_KEY }}' | jq -c '.' > keyfile.json
          gcloud auth activate-service-account --key-file=keyfile.json
           gcloud run deploy $REPO_NAME \
           --region $REGION \
