@@ -35,7 +35,7 @@ export const getAudio = async (text: string) => {
     }
   };
 
-  export const playAudio = (audio_path: string) => {
+  export const playAudio = async (audio_path: string) => {
     const audio = new Audio(audio_path);
-    audio.play();
+    await audio.play();
   };
