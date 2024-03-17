@@ -52,9 +52,11 @@ jobs:
 
       - name: Deploy
         run: |-
+          echo "${{ secrets.GCLOUD_STORAGE_SERVICE_ACCOUNT_KEY }}" > keyfile.json
+          gcloud auth activate-service-account --key-file=keyfile.json
           gcloud run deploy $REPO_NAME \
           --region $REGION \
           --image gcr.io/$PROJECT_ID/$REPO_NAME:$GITHUB_SHA \
           --platform "managed" \
-          --set-env-vars 'OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},OPENAI_ORG_KEY=${{ secrets.OPENAI_ORG_KEY }},BASE_URL=${{ secrets.BASE_URL }},MONGO_ATLAS_USERNAME=${{ secrets.MONGO_ATLAS_USERNAME }},MONGO_ATLAS_PASSWORD=${{ secrets.MONGO_ATLAS_PASSWORD }},MONGO_ATLAS_DB=${{ secrets.MONGO_ATLAS_DB }},BASE_URL_FRONTEND=${{ secrets.BASE_URL_FRONTEND }},NEXT_PUBLIC_DEEPGRAM_API_KEY=${{ secrets.NEXT_PUBLIC_DEEPGRAM_API_KEY }},GCLOUD_STORAGE_SERVICE_ACCOUNT_KEY=${{ secrets.GCLOUD_STORAGE_SERVICE_ACCOUNT_KEY }}' \
+          --set-env-vars 'OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},OPENAI_ORG_KEY=${{ secrets.OPENAI_ORG_KEY }},BASE_URL=${{ secrets.BASE_URL }},MONGO_ATLAS_USERNAME=${{ secrets.MONGO_ATLAS_USERNAME }},MONGO_ATLAS_PASSWORD=${{ secrets.MONGO_ATLAS_PASSWORD }},MONGO_ATLAS_DB=${{ secrets.MONGO_ATLAS_DB }},BASE_URL_FRONTEND=${{ secrets.BASE_URL_FRONTEND }},NEXT_PUBLIC_DEEPGRAM_API_KEY=${{ secrets.NEXT_PUBLIC_DEEPGRAM_API_KEY }}' \
           --quiet
