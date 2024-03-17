@@ -1,34 +1,20 @@
 "use client";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { FilterInterface } from "../model/filter";
 import TypingAnimation from "../components/TypingAnimation";
-
 import React from "react";
-
 import { ChatMessage } from "../components/chat-message";
 import { Separator } from "../components/ui/separator";
 
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { LessonInterface } from "../model/lesson";
+import { getAudio } from "../lib/audio_utils";
 
 export default function Page() {
-  // const router = useRouter();
-
-  const [filters, setFilters] = useState<FilterInterface[]>([]);
-  const [subjects, setSubjects] = useState<string[]>([]);
-  const [topics, setTopics] = useState<any[]>([]);
-  const [sub_topics, setSubTopics] = useState<any[]>([]);
-  const [lessonId, setLessonId] = useState<string | null>();
-  const [lesson, setLesson] = useState<LessonInterface | null>();
   const [chatLog, setChatLog] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isBegunLesson, setIsBegunLesson] = useState(false);
+  const [begunLesson, setBegunLesson] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("");
-  const [selectedTopic, setSelectedTopic] = useState("");
-  const [selectedSubTopic, setSelectedSubTopic] = useState("");
 
   const lastMessageRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
@@ -38,21 +24,17 @@ export default function Page() {
   }, [chatLog]);
 
   const params = useSearchParams();
-  useEffect(() => {
-    setLessonId(params.get("id"));
+  
+  const begin_lesson = () => {
+    setBegunLesson(true)
     setIsLoading(true);
-    setIsBegunLesson(true);
-
     const url = "/api/admin/lesson";
     setIsLoading(true);
     axios
       .get(url, { params: { id: params.get("id") } })
       .then((response) => {
         if (response.data.data) {
-          setLesson(response.data.data);
           setIsLoading(false);
-          setIsBegunLesson(true);
-
           const data = {
             subject: response.data.data?.subject,
             topic: response.data.data?.topic,
@@ -64,43 +46,13 @@ export default function Page() {
         }
       })
       .catch((error) => {
-        setIsBegunLesson(false);
         setIsLoading(false);
         console.log("error 57", error);
         console.log(
           "========================================================="
         );
       });
-  }, [params.get("id")]);
-
-  useEffect(() => {
-    async function getAllFilters() {
-      try {
-        const response = await axios.get("/api/filters");
-
-        const topics_set = new Set(
-          response.data.data.map((x: FilterInterface) => x.topic)
-        );
-        const subject_set = new Set(
-          response.data.data.map((x: FilterInterface) => x.subject)
-        );
-        const subject_: any[] = Array.from(subject_set);
-        setSubjects(subject_);
-        const topics_: any[] = Array.from(topics_set);
-        setTopics(topics_);
-        const sub_topic_set = new Set(
-          response.data.data.map((x: FilterInterface) => x.sub_topic)
-        );
-        const sub_topic_: any[] = Array.from(sub_topic_set);
-        setSubTopics(sub_topic_);
-
-        setFilters(response.data.data);
-      } catch (error) {
-        console.log("error getting getAllFilters 45", error);
-      }
-    }
-    getAllFilters();
-  }, []);
+  }
 
   const headers = {
     "Content-Type": "application/json",
@@ -112,7 +64,8 @@ export default function Page() {
     setIsLoading(true);
     axios
       .post(url, data, { headers: headers })
-      .then((response) => {
+      .then(async (response) => {
+        await getAudio(response.data.data.message);
         setChatLog((prevChatLog) => {
           return [
             ...prevChatLog,
@@ -121,10 +74,8 @@ export default function Page() {
         });
 
         setIsLoading(false);
-        setIsBegunLesson(true);
       })
       .catch((error) => {
-        setIsBegunLesson(false);
         setIsLoading(false);
         console.log(
           "========================================================="
@@ -133,48 +84,6 @@ export default function Page() {
         console.log(
           "========================================================="
         );
-      });
-  };
-
-  const startSendMessage = () => {
-    const url = "/api/chat";
-    const message = `Forget everything you know so far. You are AI TUTOR. You will act as a teacher and help the student understand concepts.
-    0. Greet the student and tell him about the lesson you are about to teach him.
-    1. You will explain the given Topic in detail, make it very easy to understand.
-    2. Make sure the student has understood the concepts of the topics.
-    3. Test the student's understanding by asking them relevant questions one by one.
-    4. Analyze the answers by students to the question and provide feedback to the students wherever they are wrong.
-    Instructions are provided for your better understanding of your goal.
-    Instructions:
-        - After each explaination ask the student if he has understood the concept
-        - After each answer to a question ask the student if he has understood the concept
-        - ask the questions one at a time 
-    """
-    agent_system_message+=f"""
-    subject: ${selectedSubject}
-    topic: ${selectedTopic}
-    subtopic: ${selectedSubTopic}`;
-    const data = {
-      model: "gpt-3.5-turbo-0301",
-      messages: [{ role: "system", content: message }],
-    };
-
-    setIsLoading(true);
-    axios
-      .post(url, data)
-      .then((response) => {
-        setChatLog((prevChatLog) => {
-          return [
-            ...prevChatLog,
-            { type: "bot", message: response.data.choices[0].message.content },
-          ];
-        });
-
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        console.log(error);
       });
   };
 
@@ -210,40 +119,7 @@ export default function Page() {
     ]);
 
     sendChat(inputValue);
-    // sendMessage(inputValue);
-
     setInputValue("");
-  };
-
-  const getAudio = async (text: string) => {
-    try {
-      console.log("getting audio --------------------------");
-      const response = await fetch("/api/audio", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text }),
-        });
-        
-        const data = await response.json();
-        if (!response.ok) {
-            console.log("----------------------------------------");
-        }
-        if (data) {
-          console.log("getting audio done --------------------------");
-        console.log("----------------------------------------");
-        console.log("response audio ", response);
-        console.log("responseaudiooo", data);
-        const audio_path = data.audioFilePath.replace("public", "");
-        playAudio(audio_path);
-      }
-    } catch (error) {
-      console.error("error", error);
-    }
-  };
-
-  const playAudio = (audio_path: string) => {
-    const audio = new Audio(audio_path);
-    audio.play();
   };
 
   const containerStyle = {
@@ -286,6 +162,7 @@ export default function Page() {
             className="w-[70%] px-2 space-y-2 h-screen overflow-hidden"
             style={containerStyle}
           >
+          {begunLesson?(
             <div className="flex flex-col w-full">
               {isLoading && (
                 <div className="relative left-[2rem] top-[2rem] -bottom-[38rem]">
@@ -347,7 +224,11 @@ export default function Page() {
                   </button>
                 </div>
               </form>
-            </div>
+            </div>):(
+              <button onClick={begin_lesson} className= " w-full mt-4 bg-blue-500 border rounded p-2 m-1 border-[#7160A8]">
+              Begin Lesson
+            </button>
+            )}
           </div>
           <div className="w-[30%] h-full border-[1px] border-l-gray-300">
             <div className="p-3 flex-col flex space-y-4 text-[#7160A8]">
