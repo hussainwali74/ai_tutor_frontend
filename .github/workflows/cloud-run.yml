@@ -42,7 +42,6 @@ jobs:
           MONGO_ATLAS_DB: ${{ secrets.MONGO_ATLAS_DB }}
           BASE_URL_FRONTEND: ${{ secrets.BASE_URL_FRONTEND }}
           NEXT_PUBLIC_DEEPGRAM_API_KEY: ${{ secrets.NEXT_PUBLIC_DEEPGRAM_API_KEY }}
-          GCLOUD_STORAGE_SERVICE_ACCOUNT_KEY: ${{ secrets.GCLOUD_STORAGE_SERVICE_ACCOUNT_KEY }}
         run: |-
           docker build . --tag gcr.io/$PROJECT_ID/$REPO_NAME:$GITHUB_SHA
 
