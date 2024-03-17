@@ -13,7 +13,7 @@ import { getAudio } from "../lib/audio_utils";
 export default function Page() {
   const [chatLog, setChatLog] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [begunLesson, setBegunLesson] = useState(false);
+  const [begunLesson, setBegunLesson] = useState(true);
   const [inputValue, setInputValue] = useState("");
 
   const lastMessageRef = useRef<HTMLDivElement | null>(null);
@@ -65,7 +65,7 @@ export default function Page() {
     axios
       .post(url, data, { headers: headers })
       .then(async (response) => {
-        await getAudio(response.data.data.message);
+        // await getAudio(response.data.data.message);
         setChatLog((prevChatLog) => {
           return [
             ...prevChatLog,
