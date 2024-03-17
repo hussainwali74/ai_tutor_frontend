@@ -52,8 +52,8 @@ jobs:
 
       - name: Deploy
         run: |-
-          echo '${{ secrets.GCLOUD_STORAGE_SERVICE_ACCOUNT_KEY }}' | jq 'keys_unsorted[] as $k | "\($k)=\"\(.[$k])\"" ' > keyfile.json
-          gcloud auth activate-service-account --key-file=keyfile.json
+          echo '${{ secrets.GCLOUD_STORAGE_SERVICE_ACCOUNT_KEY }}' | jq -c '.' > keyfile.json
+         gcloud auth activate-service-account --key-file=keyfile.json
           gcloud run deploy $REPO_NAME \
           --region $REGION \
           --image gcr.io/$PROJECT_ID/$REPO_NAME:$GITHUB_SHA \
