@@ -65,15 +65,21 @@ export default function Page() {
     axios
       .post(url, data, { headers: headers })
       .then(async (response) => {
-        // await getAudio(response.data.data.message);
         setChatLog((prevChatLog) => {
           return [
             ...prevChatLog,
             { type: "bot", message: response.data.data.message },
           ];
         });
+        for(let i=0; i<response.data.data.message.length;i+=20){
+          const chunk = response.data.data.message.length.slice(i,i+20)
+          console.log('----------------------------------------');
+          console.log('chunk',chunk);
+          console.log('----------------------------------------');
+          await getAudio(chunk);
+          setIsLoading(false);
+        }
 
-        setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
