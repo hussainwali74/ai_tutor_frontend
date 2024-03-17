@@ -1,8 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@deepgram/sdk";
 import { get_cloud_storage_object, get_service_account_key } from "@/app/lib/gcloud_utils";
 import {v4 as uuidv4 } from 'uuid'
-import { NextApiRequest, NextApiResponse } from "next";
 
 export async function POST(req: Request) {
   try {
@@ -46,6 +45,7 @@ export async function POST(req: Request) {
     return new NextResponse("something went wrong", { status: 500 });
   }
 }
+
 // helper function to convert stream to audio buffer
 const getAudioBuffer = async (response: any) => {
   const reader = response.getReader();
@@ -81,7 +81,7 @@ const gcloud_store_audio = async (audioBuffer: Buffer | undefined) => {
   }
 };
 
-export async function GET(req: NextApiRequest, res:NextApiResponse) {
+export async function GET(req: NextRequest) {
   const url = new URL(req.url||'')
   const searchParam = new URLSearchParams(url.searchParams)
   const fileName = searchParam.get('fileName')
