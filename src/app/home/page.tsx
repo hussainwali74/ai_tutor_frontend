@@ -68,9 +68,8 @@ export default function Page() {
     const url = "api/admin/begin_chat";
     setIsLoading(true);
     try {
-      // const response = await axios.post(url, data, { headers });
-      // const text= response.data.data.message
-      let text = "Do you understand this introduction to addition, or is there something you would like me to go over again?";
+      const response = await axios.post(url, data, { headers });
+      const text= response.data.data.message
       await handleAudio(text)
     } catch (error) {
       console.log("error", error);
