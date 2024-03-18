@@ -1,7 +1,6 @@
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { cn } from "../lib/utils";
-import { IconOpenAI, IconUser } from "./ui/icons";
 import { MemoizedReactMarkdown } from "./markdown";
 import { CodeBlock } from "./ui/codeblock";
 import { ChatMessageActions } from "./chat-message-actions";
@@ -38,13 +37,6 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
           remarkPlugins={[remarkGfm, remarkMath]}
           components={{
             p({ children }) {
-              console.log(
-                "========================================================="
-              );
-              console.log("className", children);
-              console.log(
-                "========================================================="
-              );
               return <p className="mb-2 last:mb-0">{children}</p>;
             },
             code({ node, inline, className, children, ...props }) {

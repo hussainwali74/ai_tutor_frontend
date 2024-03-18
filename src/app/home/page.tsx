@@ -8,25 +8,36 @@ import { Separator } from "../components/ui/separator";
 
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { getAudio } from "../lib/audio_utils";
+import { getAudio, playAudio } from "../lib/audio_utils";
 
 export default function Page() {
+  const [audioQueue, setAudioQueue] = useState<{audio_path:string, chunk:string}[]>([]);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [chatLog, setChatLog] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [begunLesson, setBegunLesson] = useState(true);
   const [inputValue, setInputValue] = useState("");
-
   const lastMessageRef = useRef<HTMLDivElement | null>(null);
+  const params = useSearchParams();
+
+  const headers = {
+    "Content-Type": "application/json",
+    accept: "application/json",
+  };
+
   useEffect(() => {
     if (lastMessageRef.current) {
       lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatLog]);
 
-  const params = useSearchParams();
-  
+  useEffect(() => {
+
+    begin_lesson();
+  }, []);
+
   const begin_lesson = () => {
-    setBegunLesson(true)
+    setBegunLesson(true);
     setIsLoading(true);
     const url = "/api/admin/lesson";
     setIsLoading(true);
@@ -34,7 +45,6 @@ export default function Page() {
       .get(url, { params: { id: params.get("id") } })
       .then((response) => {
         if (response.data.data) {
-          setIsLoading(false);
           const data = {
             subject: response.data.data?.subject,
             topic: response.data.data?.topic,
@@ -52,45 +62,20 @@ export default function Page() {
           "========================================================="
         );
       });
-  }
-
-  const headers = {
-    "Content-Type": "application/json",
-    accept: "application/json",
   };
 
-  const beginChat = (data: any) => {
+  const beginChat = async (data: any) => {
     const url = "api/admin/begin_chat";
     setIsLoading(true);
-    axios
-      .post(url, data, { headers: headers })
-      .then(async (response) => {
-        setChatLog((prevChatLog) => {
-          return [
-            ...prevChatLog,
-            { type: "bot", message: response.data.data.message },
-          ];
-        });
-        for(let i=0; i<response.data.data.message.length;i+=20){
-          const chunk = response.data.data.message.length.slice(i,i+20)
-          console.log('----------------------------------------');
-          console.log('chunk',chunk);
-          console.log('----------------------------------------');
-          await getAudio(chunk);
-          setIsLoading(false);
-        }
-
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        console.log(
-          "========================================================="
-        );
-        console.log("error 57", error);
-        console.log(
-          "========================================================="
-        );
-      });
+    try {
+      // const response = await axios.post(url, data, { headers });
+      // const text= response.data.data.message
+      let text = "Do you understand this introduction to addition, or is there something you would like me to go over again?";
+      await handleAudio(text)
+    } catch (error) {
+      console.log("error", error);
+      console.log("----------------------------------------");
+    }
   };
 
   const sendChat = (message: any) => {
@@ -100,21 +85,49 @@ export default function Page() {
       .post(url, { headers: headers })
       .then(async (response) => {
         if (response?.data) {
-          await getAudio(response.data.data.message);
-          setChatLog((prevChatLog) => {
-            return [
-              ...prevChatLog,
-              { type: "bot", message: response.data.data.message },
-            ];
-          });
+          const text = response.data.data.message
+          // setChatLog(prev=>[...prev, {type:"bot",message:text}])
+          await handleAudio(text)
+
         }
-        setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
         console.log(error);
       });
   };
+
+  const handleAudio = async (text:string)=>{
+      const sentences = text.split(/(?<=[.!?])\s+/);
+      let x = 0;
+      for (let i = 0; i < sentences.length; i += 2) {
+        const chunk = sentences.slice(i, i + 2);
+        console.log("chunk", chunk);
+        console.log("----------------------------------------");
+        if (chunk.length) {
+          const audio_path = await getAudio(chunk.join(" ")) || '';
+          setAudioQueue((prevQueue)=>[...prevQueue, {chunk:chunk.join(' '),audio_path:audio_path}])
+          if (x==0){  
+            setChatLog(prev=> [...prev, {type:'bot', message:text}])
+            x+=1
+          }
+          setIsLoading(false)
+        }
+      }
+  }
+  // plays audio.
+  useEffect(() => {
+    const playNextAudio = async () => {
+      if (audioQueue.length > 0 && !isAudioPlaying) {
+        setIsAudioPlaying(true)
+        const nextAudioPath = audioQueue[0];
+        await playAudio(nextAudioPath.audio_path);
+        setAudioQueue((prevQueue) => prevQueue.slice(1));
+        setIsAudioPlaying(false)
+      }
+    };
+    playNextAudio();
+  }, [audioQueue, isAudioPlaying]);
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
@@ -130,7 +143,7 @@ export default function Page() {
 
   const containerStyle = {
     backgroundImage: `url('/chat_bg.png')`,
-    height: "91vh", // Set the height as needed
+    height: "88vh", // Set the height as needed
     width: "100%",
   };
 
@@ -164,30 +177,20 @@ export default function Page() {
         </div>
 
         <div className="flex flex-row bg-gray-100">
-          <div
-            className="w-[70%] px-2 space-y-2 h-screen overflow-hidden"
-            style={containerStyle}
-          >
-          {begunLesson?(
+          <div className="w-[70%] px-2 space-y-2 h-screen overflow-hidden" style={containerStyle} >
             <div className="flex flex-col w-full">
-              {isLoading && (
+              {isLoading && !chatLog.length ? (
                 <div className="relative left-[2rem] top-[2rem] -bottom-[38rem]">
                   <div className="bg-gray-300 rounded-lg p-4 text-white w-[4rem]">
-                    <TypingAnimation />
+                    <TypingAnimation /> 
                   </div>
                 </div>
-              )}
-
-              {chatLog.length ? (
-                <div className="flex-grow pl-6 pr-1 mt-5 fixed mb-20 h-[76%] w-[76%] overflow-y-scroll">
-                  <div className="flex flex-col space-y-4 px-10  ">
+              ):
+              chatLog.length ? (
+                <div className="flex-grow pl-6 pr-1 mt-5 fixed mb-20 h-[66%] w-[76%] overflow-y-scroll">
+                  <div className="flex flex-col space-y-4 px-10">
                     {chatLog.map((message, index) => (
-                      <div
-                        key={index}
-                        ref={
-                          index === chatLog.length - 1 ? lastMessageRef : null
-                        }
-                      >
+                      <div key={index} ref={index === chatLog.length - 1 ? lastMessageRef : null}>
                         <ChatMessage message={message} />
                         {index < message.length - 1 && (
                           <Separator className="my-4 md:my-8" />
@@ -205,10 +208,7 @@ export default function Page() {
                 </div>
               ) : null}
 
-              <form
-                onSubmit={handleSubmit}
-                className="fixed bottom-1 w-[76%] flex-none p-6"
-              >
+              <form onSubmit={handleSubmit} className="fixed bottom-1 w-[76%] flex-none p-6" >
                 <div className="flex rounded-xl border">
                   <input
                     type="text"
@@ -217,32 +217,21 @@ export default function Page() {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                   />
-                  <button
-                    type="submit"
-                    className="rounded-lg px-4 py-2 bg-white "
-                  >
-                    <Image
-                      src={"/icons/send.png"}
-                      alt="heavy"
-                      width={48}
-                      height={48}
-                    />
+                  <button type="submit" className="rounded-lg px-4 py-2 bg-white ">
+                    <Image src={"/icons/send.png"} alt="heavy" width={48} height={48} />
                   </button>
                 </div>
               </form>
-            </div>):(
+            </div>
+            {/* ):(
               <button onClick={begin_lesson} className= " w-full mt-4 bg-blue-500 border rounded p-2 m-1 border-[#7160A8]">
               Begin Lesson
             </button>
-            )}
+            )} */}
           </div>
           <div className="w-[30%] h-full border-[1px] border-l-gray-300">
             <div className="p-3 flex-col flex space-y-4 text-[#7160A8]">
-              <Image
-                src={"/bot_avatar_lg.png"}
-                height={282}
-                width={379}
-                alt="new"
+              <Image src={"/bot_avatar_lg.png"} height={282} width={379} alt="new"
               />
               <div className="bg-yellow-50 p-4 rounded-xl w-full">
                 <span className="text-[16px] font-[600]">Try a Prompt</span>
