@@ -206,7 +206,7 @@ export default function Page() {
                   </div>
                 </div>
               ) : null}
-              <HomeFormComponent handleSubmit={handleSubmit} inputValue={inputValue} setInputValue={setInputValue}/>
+              <HomeFormComponent disabled={isLoading} handleSubmit={handleSubmit} inputValue={inputValue} setInputValue={setInputValue}/>
             </div>
           </div>
           <HomeRightSectionComponent />

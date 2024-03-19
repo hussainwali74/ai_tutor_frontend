@@ -8,11 +8,12 @@ import SpeechRecognition, {
 
 interface MicrophoneComponentProps {
     className:string;
+    disabled:boolean;
     setText:(text:string)=>void;
     onSubmitt:()=>void;
 }
 
-export const MicrophoneComponent = ({className, setText, onSubmitt}: MicrophoneComponentProps) => {
+export const MicrophoneComponent = ({className, disabled, setText, onSubmitt}: MicrophoneComponentProps) => {
   const [isBrowser, setIsBrowser] = useState(false);
 
   const {
@@ -47,7 +48,7 @@ export const MicrophoneComponent = ({className, setText, onSubmitt}: MicrophoneC
   };
 
   return (
-      <button className={className} type="button" onClick={() => handleRecording()}>
+      <button disabled={disabled} className={className} type="button" onClick={() => handleRecording()}>
         {listening ? (
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 20" strokeWidth={1.25} fill="currentColor" className="w-6 h-6">
                 <path d="M8.25 4.5a3.75 3.75 0 1 1 7.5 0v8.25a3.75 3.75 0 1 1-7.5 0V4.5Z" />
