@@ -1,19 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import {  Types } from "mongoose";
 import LessonModel, { LessonInterface } from "@/app/model/lesson";
 import SubjectModel, { SubjectInterface } from "@/app/model/subject";
+import { connect, Types } from "mongoose";
+import { mongo_atlas_connection_str } from "@/app/lib/db";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log("==========================================================");
-    console.log("body", body);
-    console.log("=========================================================");
-
     const { payload } = body;
     if (!payload) {
       return new NextResponse("messages required", { status: 400 });
     }
+    await connect(mongo_atlas_connection_str);
 
     let q: LessonInterface = {
       title: payload.title,
@@ -23,16 +21,10 @@ export async function POST(req: Request) {
       context1: payload.context,
       topic: payload.topic,
     };
-console.log('=========================================================')
-console.log('q',q);
-console.log('=========================================================')
     let newLesson = new LessonModel(q);
     await newLesson.save();
 
     const all: LessonInterface[] = await LessonModel.find();
-    console.log("=========================================================");
-    console.log("all", all);
-    console.log("=========================================================");
     return NextResponse.json({ data: all, status: 200 });
   } catch (error) {
     console.log("[FILTER_CREATION_ERROR]", error);
@@ -44,7 +36,11 @@ export async function GET(req: NextRequest) {
   try {
     const id = req.nextUrl.searchParams.get("id");
     if (id && Types.ObjectId.isValid(id)) {
+    const conn = await connect(mongo_atlas_connection_str);
       let lesson: LessonInterface | null = await LessonModel.findById(id).lean();
+      console.log('----------------------------------------');
+      console.log('lesson',lesson);
+      console.log('----------------------------------------');
       if(lesson){
           const subject:SubjectInterface| null = await SubjectModel.findById(lesson.subject)
           lesson['subject'] = subject?subject.title:lesson.subject
@@ -58,6 +54,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ data: lessons, status: 200 });
     }
   } catch (error) {
+    console.log('----------------------------------------');
+    console.log('error',error);
+    console.log('----------------------------------------');
     return new NextResponse("Internal error", { status: 500 });
   }
 }
