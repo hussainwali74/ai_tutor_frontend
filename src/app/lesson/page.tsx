@@ -1,8 +1,6 @@
 "use client";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { FilterInterface } from "../model/filter";
 import Modal from "../components/modal";
 import React from "react";
 import Image from "next/image";
@@ -10,15 +8,8 @@ import Link from "next/link";
 import { LessonInterface } from "../model/lesson";
 
 export default function Page() {
-  const router = useRouter();
-  const [filters, setFilters] = useState<FilterInterface[]>([]);
-  const [subjects, setSubjects] = useState<string[]>([]);
-  const [topics, setTopics] = useState<any[]>([]);
   const [lessons, setLessons] = useState<LessonInterface[]>([]);
 
-  const [sub_topics, setSubTopics] = useState<any[]>([]);
-  const [chatLog, setChatLog] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [startedLessonId, setStartedLessonId] = useState<string | undefined>();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -49,35 +40,6 @@ export default function Page() {
 
   //   testing123()
   // },[])
-  
-  useEffect(() => {
-    async function getAllFilters() {
-      try {
-        const response = await axios.get("/api/filters");
-
-        const topics_set = new Set(
-          response.data.data.map((x: FilterInterface) => x.topic)
-        );
-        const subject_set = new Set(
-          response.data.data.map((x: FilterInterface) => x.subject)
-        );
-        const subject_: any[] = Array.from(subject_set);
-        setSubjects(subject_);
-        const topics_: any[] = Array.from(topics_set);
-        setTopics(topics_);
-        const sub_topic_set = new Set(
-          response.data.data.map((x: FilterInterface) => x.sub_topic)
-        );
-        const sub_topic_: any[] = Array.from(sub_topic_set);
-        setSubTopics(sub_topic_);
-
-        setFilters(response.data.data);
-      } catch (error) {
-        console.log("error getting filters lessons page.tsx 45", error);
-      }
-    }
-    getAllFilters();
-  }, []);
 
   const bgContainerStyle = {
     backgroundImage: `url('/lessons_bg.png')`,

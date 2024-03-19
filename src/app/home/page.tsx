@@ -9,9 +9,13 @@ import { Separator } from "../components/ui/separator";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { getAudio, playAudio } from "../lib/audio_utils";
+import { HomeRightSectionComponent } from "../components/home/right_section";
+import { HomeFormComponent } from "../components/home/form";
 
 export default function Page() {
-  const [audioQueue, setAudioQueue] = useState<{audio_path:string, chunk:string}[]>([]);
+  const [audioQueue, setAudioQueue] = useState<
+    { audio_path: string; chunk: string }[]
+  >([]);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [chatLog, setChatLog] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +36,6 @@ export default function Page() {
   }, [chatLog]);
 
   useEffect(() => {
-
     begin_lesson();
   }, []);
 
@@ -69,8 +72,8 @@ export default function Page() {
     setIsLoading(true);
     try {
       const response = await axios.post(url, data, { headers });
-      const text= response.data.data.message
-      await handleAudio(text)
+      const text = response.data.data.message;
+      await handleAudio(text);
     } catch (error) {
       console.log("error", error);
       console.log("----------------------------------------");
@@ -84,10 +87,8 @@ export default function Page() {
       .post(url, { headers: headers })
       .then(async (response) => {
         if (response?.data) {
-          const text = response.data.data.message
-          // setChatLog(prev=>[...prev, {type:"bot",message:text}])
-          await handleAudio(text)
-
+          const text = response.data.data.message;
+          await handleAudio(text);
         }
       })
       .catch((error) => {
@@ -96,46 +97,47 @@ export default function Page() {
       });
   };
 
-  const handleAudio = async (text:string)=>{
-      const sentences = text.split(/(?<=[.!?])\s+/);
-      let x = 0;
-      for (let i = 0; i < sentences.length; i += 2) {
-        const chunk = sentences.slice(i, i + 2);
-        console.log("chunk", chunk);
-        console.log("----------------------------------------");
-        if (chunk.length) {
-          const audio_path = await getAudio(chunk.join(" ")) || '';
-          setAudioQueue((prevQueue)=>[...prevQueue, {chunk:chunk.join(' '),audio_path:audio_path}])
-          if (x==0){  
-            setChatLog(prev=> [...prev, {type:'bot', message:text}])
-            x+=1
-          }
-          setIsLoading(false)
+  const handleAudio = async (text: string) => {
+    const sentences = text.split(/(?<=[.!?])\s+/);
+    let x = 0;
+    for (let i = 0; i < sentences.length; i += 2) {
+      const chunk = sentences.slice(i, i + 2);
+      console.log("chunk", chunk);
+      console.log("----------------------------------------");
+      if (chunk.length) {
+        const audio_path = (await getAudio(chunk.join(" "))) || "";
+        setAudioQueue((prevQueue) => [
+          ...prevQueue,
+          { chunk: chunk.join(" "), audio_path: audio_path },
+        ]);
+        if (x == 0) {
+          setChatLog((prev) => [...prev, { type: "bot", message: text }]);
+          x += 1;
         }
+        setIsLoading(false);
       }
-  }
+    }
+  };
+
   // plays audio.
   useEffect(() => {
     const playNextAudio = async () => {
       if (audioQueue.length > 0 && !isAudioPlaying) {
-        setIsAudioPlaying(true)
+        setIsAudioPlaying(true);
         const nextAudioPath = audioQueue[0];
         await playAudio(nextAudioPath.audio_path);
         setAudioQueue((prevQueue) => prevQueue.slice(1));
-        setIsAudioPlaying(false)
+        setIsAudioPlaying(false);
       }
     };
     playNextAudio();
   }, [audioQueue, isAudioPlaying]);
 
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
-
+  const handleSubmit = () => {
     setChatLog((prevChatLog) => [
       ...prevChatLog,
       { type: "user", message: inputValue },
     ]);
-
     sendChat(inputValue);
     setInputValue("");
   };
@@ -174,22 +176,20 @@ export default function Page() {
             <Image src={"/user_avatar.png"} height={41} width={45} alt={"af"} />
           </div>
         </div>
-
         <div className="flex flex-row bg-gray-100">
           <div className="w-[70%] px-2 space-y-2 h-screen overflow-hidden" style={containerStyle} >
             <div className="flex flex-col w-full">
               {isLoading && !chatLog.length ? (
                 <div className="relative left-[2rem] top-[2rem] -bottom-[38rem]">
                   <div className="bg-gray-300 rounded-lg p-4 text-white w-[4rem]">
-                    <TypingAnimation /> 
+                    <TypingAnimation />
                   </div>
                 </div>
-              ):
-              chatLog.length ? (
+              ) : chatLog.length ? (
                 <div className="flex-grow pl-6 pr-1 mt-5 fixed mb-20 h-[66%] w-[76%] overflow-y-scroll">
                   <div className="flex flex-col space-y-4 px-10">
                     {chatLog.map((message, index) => (
-                      <div key={index} ref={index === chatLog.length - 1 ? lastMessageRef : null}>
+                      <div key={index} ref={ index === chatLog.length - 1 ? lastMessageRef : null } >
                         <ChatMessage message={message} />
                         {index < message.length - 1 && (
                           <Separator className="my-4 md:my-8" />
@@ -206,48 +206,10 @@ export default function Page() {
                   </div>
                 </div>
               ) : null}
-
-              <form onSubmit={handleSubmit} className="fixed bottom-1 w-[76%] flex-none p-6" >
-                <div className="flex rounded-xl border">
-                  <input
-                    type="text"
-                    className="flex-grow px-4 py-2 bg-white h-[72px] text-gray-600 focus:outline-none"
-                    placeholder="Type your message..."
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                  />
-                  <button type="submit" className="rounded-lg px-4 py-2 bg-white ">
-                    <Image src={"/icons/send.png"} alt="heavy" width={48} height={48} />
-                  </button>
-                </div>
-              </form>
-            </div>
-            {/* ):(
-              <button onClick={begin_lesson} className= " w-full mt-4 bg-blue-500 border rounded p-2 m-1 border-[#7160A8]">
-              Begin Lesson
-            </button>
-            )} */}
-          </div>
-          <div className="w-[30%] h-full border-[1px] border-l-gray-300">
-            <div className="p-3 flex-col flex space-y-4 text-[#7160A8]">
-              <Image src={"/bot_avatar_lg.png"} height={282} width={379} alt="new"
-              />
-              <div className="bg-yellow-50 p-4 rounded-xl w-full">
-                <span className="text-[16px] font-[600]">Try a Prompt</span>
-                <div className="flex flex-wrap text-[12px] py-2 flex-row ">
-                  <button className="bg-transparent border rounded p-2 m-1 border-[#7160A8]">
-                    Repeat the question
-                  </button>
-                  <button className="bg-transparent border rounded p-2 m-1 border-[#7160A8]">
-                    Solve with Modal
-                  </button>
-                  <button className="bg-transparent border rounded p-2 m-1 border-[#7160A8]">
-                    Solve with Ratio
-                  </button>
-                </div>
-              </div>
+              <HomeFormComponent handleSubmit={handleSubmit} inputValue={inputValue} setInputValue={setInputValue}/>
             </div>
           </div>
+          <HomeRightSectionComponent />
         </div>
       </div>
     </>
