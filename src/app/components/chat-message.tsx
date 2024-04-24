@@ -37,7 +37,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
           remarkPlugins={[remarkGfm, remarkMath]}
           components={{
             p({ children }) {
-              return <p className="mb-2 last:mb-0">{children}</p>;
+              return <p className="mb-2 last:mb-0">{children} </p>;
             },
             code({ node, inline, className, children, ...props }) {
               if (children.length) {
@@ -81,19 +81,6 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
           <img height={64} width={64} src="/user_avatar.png" />
         </div>
       ) : null}
-
-      {/* <div
-        className={`flex ${
-          message.type === "user" ? "justify-end" : "justify-start"
-        }`}
-      >
-        <div
-          className={`${
-            message.type === "user" ? "bg-purple-500" : "bg-gray-800"
-          } rounded-lg p-4 text-white max-w-screen-sm`}
-        >
-          {message.message}
-          {/* {message.message} */}
     </div>  
   );
 }

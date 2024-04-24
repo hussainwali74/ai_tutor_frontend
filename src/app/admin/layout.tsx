@@ -44,6 +44,12 @@ export default function RootLayout({
             >
               General Prompt
             </Link>
+              <Link
+                  className="items-center p-3 border border-gray-400 rounded-md hover:bg-gray-300"
+                  href="/admin/config"
+              >
+                  Model Config
+              </Link>
           </div>
           <div className="flex flex-col w-full  h-screen text-gray-900 ">
             {children}
