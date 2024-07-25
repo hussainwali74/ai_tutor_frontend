@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import LessonModel, { LessonInterface } from "@/app/model/lesson";
-import SubjectModel, { SubjectInterface } from "@/app/model/subject";
 import { connect, Types } from "mongoose";
-import { mongo_atlas_connection_str } from "@/app/lib/db";
+import { mongo_atlas_connection_str } from "@/lib/db";
+import LessonModel, { LessonInterface } from "@/app/models/lesson";
+import SubjectModel, { SubjectInterface } from "@/app/models/subject";
 
 export async function POST(req: Request) {
   try {
@@ -18,7 +18,6 @@ export async function POST(req: Request) {
       subject: payload.subject,
       summary: payload.summary,
       context: payload.context,
-      context1: payload.context,
       topic: payload.topic,
     };
     let newLesson = new LessonModel(q);
@@ -33,21 +32,21 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: NextRequest) {
-  try {
-    const id = req.nextUrl.searchParams.get("id");
+	try {
+
+		await connect(mongo_atlas_connection_str);
+
+		const id = req.nextUrl.searchParams.get("id");
+    console.log('-----------------------------------------------------');
+    console.log('id',id);
+    console.log('-----------------------------------------------------');
+    
     if (id && Types.ObjectId.isValid(id)) {
-    const conn = await connect(mongo_atlas_connection_str);
       let lesson: LessonInterface | null = await LessonModel.findById(id).lean();
-      console.log('----------------------------------------');
-      console.log('lesson',lesson);
-      console.log('----------------------------------------');
       if(lesson){
           const subject:SubjectInterface| null = await SubjectModel.findById(lesson.subject)
           lesson['subject'] = subject?subject.title:lesson.subject
       }
-      console.log('=========================================================')
-      console.log('lesson',lesson);
-      console.log('=========================================================')
       return NextResponse.json({ data: lesson, status: 200 });
     } else {
       const lessons: LessonInterface[] = await LessonModel.find();
@@ -55,7 +54,7 @@ export async function GET(req: NextRequest) {
     }
   } catch (error) {
     console.log('----------------------------------------');
-    console.log('error',error);
+    console.log('admin/lesson error',error);
     console.log('----------------------------------------');
     return new NextResponse("Internal error", { status: 500 });
   }
