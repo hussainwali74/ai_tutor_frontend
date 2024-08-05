@@ -3,7 +3,8 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 COPY . .
-RUN npm ci --only=production --legacy-peer-deps
+RUN bun install --frozen-lockfile
+
 
 RUN npm run build
 
