@@ -15,7 +15,7 @@
 
 # production
 /build
-
+xdrizzle.config.ts
 # misc
 .DS_Store
 *.pem
