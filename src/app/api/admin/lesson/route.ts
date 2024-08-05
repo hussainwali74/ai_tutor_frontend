@@ -1,78 +1,44 @@
-import { NextRequest, NextResponse } from "next/server";
-import { connect, Types } from "mongoose";
-import { mongo_atlas_connection_str } from "@/lib/db";
-import LessonModel, { LessonInterface } from "@/app/models/lesson";
-import SubjectModel, { SubjectInterface } from "@/app/models/subject";
+import { createLesson, getLessons } from '@/db/queries/lesson.queries';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(req: Request) {
+
+export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { payload } = body;
-    if (!payload) {
-      return new NextResponse("messages required", { status: 400 });
-    }
-    await connect(mongo_atlas_connection_str);
-
-    let q: LessonInterface = {
-      title: payload.title,
-      subject: payload.subject,
-      summary: payload.summary,
-      context: payload.context,
-      topic: payload.topic,
-    };
-    let newLesson = new LessonModel(q);
-    await newLesson.save();
-
-    const all: LessonInterface[] = await LessonModel.find();
-    return NextResponse.json({ data: all, status: 200 });
-  } catch (error) {
-    console.log("[FILTER_CREATION_ERROR]", error);
-    return new NextResponse("Internal error", { status: 500 });
-  }
-}
-
-export async function GET(req: NextRequest) {
-	try {
-
-		await connect(mongo_atlas_connection_str);
-
-		const id = req.nextUrl.searchParams.get("id");
+    const data = await req.json();
     console.log('-----------------------------------------------------');
-    console.log('id',id);
+    console.log('data',data);
     console.log('-----------------------------------------------------');
     
-    if (id && Types.ObjectId.isValid(id)) {
-      let lesson: LessonInterface | null = await LessonModel.findById(id).lean();
-      if(lesson){
-          const subject:SubjectInterface| null = await SubjectModel.findById(lesson.subject)
-          lesson['subject'] = subject?subject.title:lesson.subject
-      }
-      return NextResponse.json({ data: lesson, status: 200 });
-    } else {
-      const lessons: LessonInterface[] = await LessonModel.find();
-      return NextResponse.json({ data: lessons, status: 200 });
-    }
+    const newLesson = await createLesson(data);
+
+    console.log('-----------------------------------------------------');
+    console.log('newLesson',newLesson);
+    console.log('-----------------------------------------------------');
+    
+    return NextResponse.json(newLesson, { status: 201 });
   } catch (error) {
-    console.log('----------------------------------------');
-    console.log('admin/lesson error',error);
-    console.log('----------------------------------------');
-    return new NextResponse("Internal error", { status: 500 });
+    console.log('-----------------------------------------------------');
+    console.log('error',error);
+    console.log('-----------------------------------------------------');
+    
+    return NextResponse.json({ error: 'Failed to create topic' }, { status: 500 });
   }
 }
 
-export async function DELETE(req: NextRequest) {
+// app/api/topices/route.ts
+export async function GET(req: NextRequest) {
   try {
-    const id = req.nextUrl.searchParams.get("id");
-    if (id && Types.ObjectId.isValid(id)) {
-      const resp = await LessonModel.findByIdAndDelete(req.nextUrl.searchParams.get("id"));
-      return NextResponse.json({ data: " all", status: 200 });
-    } else {
-      return new NextResponse("Invalid id provided", { status: 400 });
-    }
+      const topics = await getLessons();
+      if (!topics) {
+        return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });
+      }
+      return NextResponse.json(topics);
+    
   } catch (error) {
-    console.log("=========================================================");
-    console.log("error lesson delete  routes.ts 80", error);
-    console.log("=========================================================");
-    return new NextResponse("Internal error", { status: 500 });
+    console.log('-----------------------------------------------------');
+    console.log('error',error);
+    console.log('-----------------------------------------------------');
+    
+    return NextResponse.json({ error: 'Failed to fetch topic' }, { status: 500 });
   }
 }

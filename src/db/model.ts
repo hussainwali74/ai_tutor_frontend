@@ -4,6 +4,7 @@ export interface User{
     clerk_id?:string
     name:string
     email:string
+    role?:string
     contact?:string,
     address?:string,
     imageSrc?:string,

@@ -1,5 +1,5 @@
 {
-  "id": "6c719a02-6603-4de7-ad23-c549e51dbc95",
+  "id": "c9d00364-5ffc-465f-819d-81a7e74537ad",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -26,6 +26,13 @@
           "primaryKey": false,
           "notNull": false
         },
+        "admin_id": {
+          "name": "admin_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -47,7 +54,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "class_admin_id_user_id_fk": {
+          "name": "class_admin_id_user_id_fk",
+          "tableFrom": "class",
+          "tableTo": "user",
+          "columnsFrom": [
+            "admin_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -308,6 +329,13 @@
           "primaryKey": false,
           "notNull": false
         },
+        "admin_id": {
+          "name": "admin_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
         "class_id": {
           "name": "class_id",
           "type": "integer",
@@ -349,6 +377,19 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
+        "student_admin_id_user_id_fk": {
+          "name": "student_admin_id_user_id_fk",
+          "tableFrom": "student",
+          "tableTo": "user",
+          "columnsFrom": [
+            "admin_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "student_class_id_class_id_fk": {
           "name": "student_class_id_class_id_fk",
           "tableFrom": "student",
@@ -378,7 +419,7 @@
         },
         "role": {
           "name": "role",
-          "type": "char(10)",
+          "type": "varchar(10)",
           "primaryKey": false,
           "notNull": false
         },
@@ -1203,7 +1244,7 @@
         },
         "clerk_id": {
           "name": "clerk_id",
-          "type": "char(100)",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": false
         },
@@ -1236,6 +1277,19 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "admin_id": {
+          "name": "admin_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'student'"
         },
         "created_at": {
           "name": "created_at",

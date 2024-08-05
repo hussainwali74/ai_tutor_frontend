@@ -7,7 +7,7 @@ import {
   SignInButton,
   SignUpButton,
 } from "@clerk/nextjs";
-import { BotIcon, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -38,7 +38,7 @@ function Page() {
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <ClerkLoading>
-                    <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
+                    <Loader className="w-5 h-5 text-muted-foreground animate-spin" />
                   </ClerkLoading>
                   <ClerkLoaded>
                     <SignedOut>
@@ -101,7 +101,7 @@ function Page() {
                 width="550"
                 height="550"
                 alt="AI Tutor"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last lg:aspect-square"
+                className="object-cover mx-auto overflow-hidden aspect-video rounded-xl sm:w-full lg:order-last lg:aspect-square"
               /> */}
             </div>
           </div>
@@ -110,7 +110,7 @@ function Page() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl py-2">
+                <h2 className="py-2 text-3xl font-bold tracking-tighter sm:text-5xl">
                   Subjects Covered
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
@@ -119,7 +119,7 @@ function Page() {
                 </p>
               </div>
             </div>
-            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-3 lg:gap-12">
+            <div className="grid items-center max-w-5xl gap-6 py-12 mx-auto lg:grid-cols-3 lg:gap-12">
               <div className="grid gap-1">
                 <h3 className="text-xl font-bold">Math</h3>
                 <p className="text-muted-foreground">
@@ -172,8 +172,8 @@ function Page() {
                 </p>
               </div>
             </div>
-            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
-              <Card className="flex flex-col justify-between p-6 bg-muted rounded-lg shadow-sm">
+            <div className="grid items-center max-w-5xl gap-6 py-12 mx-auto lg:grid-cols-2 lg:gap-12">
+              <Card className="flex flex-col justify-between p-6 rounded-lg shadow-sm bg-muted">
                 <div className="space-y-4">
                   <div className="flex items-center gap-4">
                     <Avatar>
@@ -190,14 +190,14 @@ function Page() {
                     </div>
                   </div>
                   <p className="text-muted-foreground">
-                    "AI Tutor has been a game-changer for me. The personalized
+                  &quot;AI Tutor has been a game-changer for me. The personalized
                     lessons and interactive exercises have helped me understand
                     complex topics in a way that traditional tutoring never
-                    could."
+                    could.&quot;
                   </p>
                 </div>
               </Card>
-              <Card className="flex flex-col justify-between p-6 bg-muted rounded-lg shadow-sm">
+              <Card className="flex flex-col justify-between p-6 rounded-lg shadow-sm bg-muted">
                 <div className="space-y-4">
                   <div className="flex items-center gap-4">
                     <Avatar>
@@ -214,9 +214,9 @@ function Page() {
                     </div>
                   </div>
                   <p className="text-muted-foreground">
-                    "I used to struggle with math, but AI Tutor has helped me
+                  &quot;I used to struggle with math, but AI Tutor has helped me
                     build a strong foundation and improve my skills. The
-                    progress tracking feature keeps me motivated and on track."
+                    progress tracking feature keeps me motivated and on track.&quot;
                   </p>
                 </div>
               </Card>
@@ -234,17 +234,17 @@ function Page() {
                 journey today.
               </p>
             </div>
-            <div className="mx-auto w-full max-w-sm space-y-2">
+            <div className="w-full max-w-sm mx-auto space-y-2">
               <form className="flex gap-2">
                 <Input
                   type="email"
                   placeholder="Enter your email"
-                  className="max-w-lg flex-1"
+                  className="flex-1 max-w-lg"
                 />
                 <Button type="submit">Get Started</Button>
               </form>
               <p className="text-xs text-muted-foreground">
-                Sign up to start your free trial.{" "}
+                Sign up to start your free trial.
                 <Link
                   href="#"
                   className="underline underline-offset-2"

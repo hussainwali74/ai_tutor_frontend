@@ -8,7 +8,7 @@ import { ChatMessageProps } from './chat-message'
 import { CheckIcon, CopyIcon } from 'lucide-react'
 
 interface ChatMessageActionsProps extends React.ComponentProps<'div'> {
-  message: {type:string,message:string}
+  message: {role:string,content:string}
 }
 
 export function ChatMessageActions({
@@ -20,7 +20,7 @@ export function ChatMessageActions({
 
   const onCopy = () => {
     if (isCopied) return
-    copyToClipboard(message.message)
+    copyToClipboard(message.content)
   }
 
   return (

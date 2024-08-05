@@ -1,44 +1,41 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-// import  {GPTLLm}  from "@/lib/gpt";
-import { getChatByStudentId, getStudentByClerkId, insertStudentChat } from "@/db/queries";
-import { ChatCompletionMessageParam, getGpt } from "@/lib/gpt";
+import { ChatCompletionMessageParam, getGpt, sendMsg } from "@/lib/gpt";
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-const gpt = getGpt()
+import { getSystemPrompt } from "@/lib/ai/prompt";
+import { getChatByStudentId, getStudentByClerkId } from "@/db/queries/student.queries";
+
+let gpt = getGpt();
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const message = body.message
-    console.log('-----------------------------------------------------');
-    console.log('message',message);
-    console.log('-----------------------------------------------------');
-    let res = "there is some issue on the backend"
-    const userId= auth()
-    if (userId?.userId){
-      const data = await getStudentByClerkId(userId.userId)
-      if (data){
-        const student_id = data[0].student.id
-        let inserted_chat = await insertStudentChat(student_id,body.lesson_id, 'user' ,body.message)
-        const chat_data = await getChatByStudentId(student_id)
-        // @ts-ignore
-        const conversation_history:ChatCompletionMessageParam[] = chat_data.map((chat)=>{
-          return {role:chat?.role, content:chat?.content}
-        })
-        console.log('-----------------------------------------------------');
-        console.log('conversation_history',conversation_history);
-        console.log('-----------------------------------------------------');
-        gpt.conversation_history = conversation_history 
-        
-        
-        console.log('-----------------------------------------------------');
-        console.log('gpt.conversation_history',gpt.conversation_history);
-        console.log('-----------------------------------------------------');
-        
-        res = await gpt.chatCompletion() || '-'
-        inserted_chat = await insertStudentChat(student_id,body.lesson_id, 'assistant' ,res!)
+    let res = "there seems to be some issue please try again later";
+    const userId = req.headers.get("clerk_id");
+
+    if (userId) {
+      const student_data = await getStudentByClerkId(userId);
+      if (student_data.length) {
+        const student_id = student_data[0]?.student.id;
+
+        const chat_data = await getChatByStudentId(student_id, body.lesson_id);
+        if (!chat_data.length) {
+          const system_prompt1 = await getSystemPrompt(body.lesson_data);
+          ({ res, gpt } = await sendMsg("system", student_id, body.lesson_id, system_prompt1, gpt));
+          return NextResponse.json(res);
+        }
+        const last_msg = chat_data[chat_data.length - 1];
+        res = last_msg.content!;
+
+        if (body.message && chat_data.length) {
+          // @ts-ignore
+          const conversation_history: ChatCompletionMessageParam[] = chat_data.map((chat) => {
+            return { role: chat?.role, content: chat?.content };
+          });
+          gpt.conversation_history = conversation_history;
+          ({ res, gpt } = await sendMsg("user", student_id, body.lesson_id, body.message, gpt));
+        } else if (chat_data.length) {
+        }
       }
     }
-    
     return NextResponse.json(res);
   } catch (error) {
     console.log(error);

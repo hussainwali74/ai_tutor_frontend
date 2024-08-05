@@ -1,133 +1,137 @@
-import { cache } from "react";
-import db from "./drizzle";
-import { eq } from "drizzle-orm";
 import { user, lesson, student, student_bot_chat } from "./schema";
 import { Student, User } from "./model";
 
-export const getLessons = cache(async () => {
-  const data = await db.query.lesson.findMany();
-  return data;
-});
-export const getLessonById = cache(async (id: number) => {
-  const data = await db.query.lesson.findFirst({ where: eq(lesson.id, id) });
-  return data;
-});
-export const getPromptByType = cache(async () => {
-  const data = await db.query.prompt.findFirst();
-  return data;
+import { cache } from "react";
+import db from "./drizzle";
+import { eq, and } from "drizzle-orm";
+import {
+  prompt,
+  Class_,
+  subject,
+  topic,
+  test,
+  question,
+  student_test,
+  student_question,
+  student_class,
+  student_topic,
+  student_lesson,
+} from "./schema";
+
+
+
+
+// Student Test CRUD
+export const createStudentTest = cache(async (data: typeof student_test.$inferInsert) => {
+  return await db.insert(student_test).values(data).returning();
 });
 
-export const insertUser = cache(
-  async (
-    clerk_id: string,
-    contact: string,
-    address: string,
-    imageSrc: string,
-    name: string,
-    email: string
-  ) => {
-    const values: User = {
-      ...(clerk_id && { clerk_id }),
-      ...{ name: name || "-" },
-      ...{ email: email || "-" },
-      ...(contact && { contact }),
-      ...(address && { address }),
-      ...(imageSrc && { imageSrc }),
-    };
-    const data = await db
-      .insert(user)
-      .values(values)
-      .returning({ insertedId: user.id });
-    console.log("-----------------------------------------------------");
-    console.log("data", data);
-    console.log("-----------------------------------------------------");
+export const getStudentTests = cache(async () => {
+  return await db.select().from(student_test);
+});
 
-    return data;
+export const updateStudentTest = cache(
+  async (id: number, data: Partial<typeof student_test.$inferInsert>) => {
+    return await db.update(student_test).set(data).where(eq(student_test.id, id)).returning();
   }
 );
 
-export const insertStudent = cache(
-  async (user_id: number, subject_id?: number) => {
-    const values: Student = {
-      ...(user_id && { user_id }),
-      ...(subject_id && { subject_id }),
-    };
-    console.log("-----------------------------------------------------");
-    console.log("values studnet inserting", values);
-    console.log("-----------------------------------------------------");
-    const data = await db
-      .insert(student)
-      .values(values)
-      .returning({ insertedId: student.id });
-    console.log("-----------------------------------------------------");
-    console.log("data", data);
-    console.log("-----------------------------------------------------");
-    return data;
+export const deleteStudentTest = cache(async (id: number) => {
+  return await db.delete(student_test).where(eq(student_test.id, id)).returning();
+});
+
+// Student Question CRUD
+export const createStudentQuestion = cache(async (data: typeof student_question.$inferInsert) => {
+  return await db.insert(student_question).values(data).returning();
+});
+
+export const getStudentQuestions = cache(async () => {
+  return await db.select().from(student_question);
+});
+
+export const updateStudentQuestion = cache(
+  async (id: number, data: Partial<typeof student_question.$inferInsert>) => {
+    return await db.update(student_question).set(data).where(eq(student_question.id, id)).returning();
   }
 );
 
-export const getStudentByUserId = cache(async (user_id: number) => {
-  const data = await db.query.student.findFirst({
-    where: eq(student.user_id, user_id),
-  });
-  return data;
+export const deleteStudentQuestion = cache(async (id: number) => {
+  return await db.delete(student_question).where(eq(student_question.id, id)).returning();
 });
-export const getUserByClerkId = cache(async (clerk_id: string) => {
-  const data = await db.query.user.findFirst({
-    where: eq(user.clerk_id, clerk_id),
-  });
-  return data;
+
+// Student Class_ CRUD
+export const createStudentClass_ = cache(async (data: typeof student_class.$inferInsert) => {
+  return await db.insert(student_class).values(data).returning();
 });
+
+export const getStudentClass_es = cache(async () => {
+  return await db.select().from(student_class);
+});
+
+export const updateStudentClass_ = cache(
+  async (id: number, data: Partial<typeof student_class.$inferInsert>) => {
+    return await db.update(student_class).set(data).where(eq(student_class.id, id)).returning();
+  }
+);
+
+export const deleteStudentClass_ = cache(async (id: number) => {
+  return await db.delete(student_class).where(eq(student_class.id, id)).returning();
+});
+
+// Student Topic CRUD
+export const createStudentTopic = cache(async (data: typeof student_topic.$inferInsert) => {
+  return await db.insert(student_topic).values(data).returning();
+});
+
+export const getStudentTopics = cache(async () => {
+  return await db.select().from(student_topic);
+});
+
+export const updateStudentTopic = cache(
+  async (id: number, data: Partial<typeof student_topic.$inferInsert>) => {
+    return await db.update(student_topic).set(data).where(eq(student_topic.id, id)).returning();
+  }
+);
+
+export const deleteStudentTopic = cache(async (id: number) => {
+  return await db.delete(student_topic).where(eq(student_topic.id, id)).returning();
+});
+
+// Student Lesson CRUD
+export const createStudentLesson = cache(async (data: typeof student_lesson.$inferInsert) => {
+  return await db.insert(student_lesson).values(data).returning();
+});
+
+export const getStudentLessons = cache(async () => {
+  return await db.select().from(student_lesson);
+});
+
+export const updateStudentLesson = cache(
+  async (id: number, data: Partial<typeof student_lesson.$inferInsert>) => {
+    return await db.update(student_lesson).set(data).where(eq(student_lesson.id, id)).returning();
+  }
+);
+
+export const deleteStudentLesson = cache(async (id: number) => {
+  return await db.delete(student_lesson).where(eq(student_lesson.id, id)).returning();
+});
+
+
+
 // chat
 
-export const getStudentByClerkId = cache(async (clerk_id: string) => {
-    // const data = await db.query.student.findFirst({
-    //   join: {
-    //     user: {
-    //       on: eq(student.user_id, user.id),
-    //     },
-    //   },
-    //   where: eq(user.clerk_id, clerk_id),
-    //   select: {
-    //     student: true,
-    //     user: {
-    //       select: {
-    //         clerk_id: true,
-    //         name: true,
-    //         email: true,
-    //         contact: true,
-    //         address: true,
-    //         imageSrc: true,
-    //         createdAt: true,
-    //         updatedAt: true,
-    //         deletedAt: true,
-    //       },
-    //     },
-    //   },
-    // });
-  
-    const data = await db.select().from(student).innerJoin(user, eq(student.user_id,user.id)).where(eq(user.clerk_id,clerk_id))
-    return data;
-  });// chat
 
-export const insertStudentChat = cache(
-  async (
-    student_id: number,
-    lesson_id: number,
-    role: string,
-    content: string
-  ) => {
-    const data = await db
-      .insert(student_bot_chat)
-      .values({ student_id, role:role.trim(), content, lesson_id });
-    return data;
-  }
-);
+export const getChatByClerkId = cache(async (clerk_id: string, lesson_id: number, limit: number = 10) => {
+  // Join student_bot_chat with student and user tables
+  const data = await db
+    .select({
+      chat: student_bot_chat,
+    })
+    .from(student_bot_chat)
+    .innerJoin(student, eq(student_bot_chat.student_id, student.id))
+    .innerJoin(user, eq(student.user_id, user.id))
+    .where(and(eq(student_bot_chat.lesson_id, lesson_id), eq(user.clerk_id, clerk_id)))
+    .limit(limit);
 
-export const getChatByStudentId = cache(async (student_id: number) => {
-  // get chats by student id
-  const data = await db.query.student_bot_chat.findMany({
-    where: eq(student_bot_chat.student_id, student_id),
-  });
   return data;
 });

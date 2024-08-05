@@ -1,4 +1,4 @@
-import { getPromptByType } from "@/db/queries";
+import { getPromptByType } from "@/db/queries/prompt.queries";
 
 export function getSystemMessageforIntent(intent: string) {
   intent = intent.split("_").join(" ");
@@ -6,7 +6,7 @@ export function getSystemMessageforIntent(intent: string) {
   return agent_system_message_buy;
 }
 
-export async function getSystemPrompt(item?:string) {
+export async function getSystemPrompt(item?: string) {
   let agent_system_message = `Forget everything you know so far. You are AI TUTOR. You will act as a teacher and help the student understand concepts.
     Please divide your responses into clear and distinct sections for better comprehension.
     0. Greet the student and tell him about the lesson you are about to teach him.
@@ -24,11 +24,7 @@ export async function getSystemPrompt(item?:string) {
     - make sure each section is on a new line, make it very readable, add spacing wherever necessary. 
     - divide your response into sections and include headers for each section
     `;
-    // const db_prompt = await getPromptByType()
-    // console.log('-----------------------------------------------------');
-    // console.log('db_prompt',db_prompt);
-    // console.log('-----------------------------------------------------');
-    
+
   agent_system_message = `Forget everything you know so far. You are a very friendly, eager to help AI TUTOR. Assume the student has no knowledge about the subject.
     
     Mandatory Instructions to follow:
@@ -56,35 +52,20 @@ export async function getSystemPrompt(item?:string) {
     5) ONLY AFTER they reply, analyze their response and then give the next practice question
     
     LASTLY : DO NOT ADD YOUR OWN REPLIES FOR THESE UNFILLED STEPS, WAIT FOR THE REPLY of the student.
-    
-}
 `;
-//   if (item?.context) {
-//     agent_system_message += `
-//           context: ${item.context}
-//           `;
-//   }
-//   if (item?.subject) {
-//     agent_system_message += `
-//           subject: ${item.subject}
-//           `;
-//   }
-//   if (item?.topic) {
-//     agent_system_message += `
-//           topic: ${item.topic}
-//           `;
-//   }
+  const from_db = await getPromptByType("system");
+
+  if (from_db) {
+    agent_system_message = from_db.prompt!;
+  }
   if (item) {
     agent_system_message += `
-        You have to teach this: ${item}
+    
+      You have to teach this: ${item}
         
-        Do not forget to divide into sections with headings.
-        `;
+      Do not forget to divide into sections with headings.
+    `;
   }
-
-  console.log("-----------------------------------------------------");
-  console.log("agent_system_message", agent_system_message);
-  console.log("-----------------------------------------------------");
 
   return agent_system_message;
 }

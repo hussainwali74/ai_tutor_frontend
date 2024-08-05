@@ -10,6 +10,9 @@ export interface LessonInterface {
   topic?: string;
   date?: Date;
   questions?:string[]
+  createdAt?:string
+  updatedAt?:string
+  deletedAt?:string
 }
 
 export const lessonSchema = new Schema<LessonInterface>({

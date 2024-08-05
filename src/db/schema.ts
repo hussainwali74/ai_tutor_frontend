@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import { char, index, integer, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const prompt = pgTable('prompt',{
@@ -11,10 +12,11 @@ export const prompt = pgTable('prompt',{
     deletedAt: timestamp('deleted_at'),
 })
 
-export const Class = pgTable('class',{
+export const Class_ = pgTable('class',{
     id:serial('id').primaryKey(),
     title:text('title').notNull(),
     imageSrc:text('image_src'),
+    admin_id: integer('admin_id').references(()=>user.id, {onDelete:'cascade'}).default(0),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at'),
     deletedAt: timestamp('deleted_at'),
@@ -25,7 +27,7 @@ export const subject = pgTable('subject',{
     title:text('title').notNull(),
     imageSrc:text('image_src'),
     summary:text('summary'),
-    class_id: integer('class_id').references(()=>Class.id, {onDelete:'cascade'}),
+    class_id: integer('class_id').references(()=>Class_.id, {onDelete:'cascade'}),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at'),
     deletedAt: timestamp('deleted_at'),
@@ -86,27 +88,35 @@ export const question = pgTable('question',{
     deletedAt: timestamp('deleted_at'),
 })
 
-export const user = pgTable('user',{
-    id:serial('id').primaryKey(),
-    clerk_id:varchar('clerk_id',{length:100}).unique(),
-    name:text('name').notNull(),
-    email:text('email').notNull(),
-    contact:text('contact'),
-    address:text('address'),
-    imageSrc:text('image_src'),
+export const user = pgTable('user', {
+    id: serial('id').primaryKey(),
+    clerk_id: varchar('clerk_id', { length: 100 }).unique(),
+    name: text('name').notNull(),
+    email: text('email').notNull(),
+    contact: text('contact'),
+    address: text('address'),
+    imageSrc: text('image_src'),
+    admin_id: integer('admin_id'),
+    role: varchar('role', { length: 20 }).notNull().default('student'), // New field for user role
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at'),
     deletedAt: timestamp('deleted_at'),
-},(table)=>{
+}, (table) => {
     return {
-        clerkIdx:index('cleck_idx').on(table.clerk_id)
+        clerkIdx: index('cleck_idx').on(table.clerk_id)
     }
 })
-
+export const usersRelations = relations(user, ({ one }) => ({
+    admin: one(user, {
+      fields: [user.admin_id],
+      references: [user.id],
+    }),
+  }));
 export const student = pgTable('student',{
     id:serial('id').primaryKey(),
     user_id: integer('user_id').references(()=>user.id, {onDelete:'cascade'}),
-    class_id: integer('class_id').references(()=>Class.id, {onUpdate:'cascade'}),
+    admin_id: integer('admin_id').references(()=>user.id, {onDelete:'cascade'}).default(0),
+    class_id: integer('class_id').references(()=>Class_.id, {onUpdate:'cascade'}),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at'),
     deletedAt: timestamp('deleted_at'),
@@ -147,7 +157,7 @@ export const student_class = pgTable('student_class',{
     enrolled_date:timestamp('enrolled_date').notNull(),
     
     student_id: integer('student_id').references(()=>student.id, {onDelete:'cascade'}),
-    class_id: integer('class_id').references(()=>Class.id, {onDelete:'cascade'}),
+    class_id: integer('class_id').references(()=>Class_.id, {onDelete:'cascade'}),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at'),
     deletedAt: timestamp('deleted_at'),

@@ -5,8 +5,8 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Modal from "@/components/modal";
-import { getLessons } from "@/db/queries";
 import LessonCardComponent from "./lesson_components/lesson_card.component";
+import { getLessons } from "@/db/queries/lesson.queries";
 
 export default function Page() {
     
@@ -15,7 +15,7 @@ export default function Page() {
   const [startedLessonId, setStartedLessonId] = useState<number | undefined>();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+ 
   useEffect(() => {
     async function getAllLessons() {
       try {
