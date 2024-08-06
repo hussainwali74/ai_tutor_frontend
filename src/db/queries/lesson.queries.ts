@@ -10,7 +10,20 @@ export const createLesson = cache(async (data: typeof lesson.$inferInsert) => {
   });
   
   export const getLessons = cache(async () => {
-    return await db.select().from(lesson);
+    try {
+      const data = await db.select().from(lesson);
+      console.log('-----------------------------------------------------');
+      console.log('data',data);
+      console.log('-----------------------------------------------------');
+      
+      return data
+      
+    } catch (error) {
+     console.log('-----------------------------------------------------');
+     console.log('lesson.queries error 23',error);
+     console.log('-----------------------------------------------------');
+     
+    }
   });
   
   export const getLessonById = cache(async (id: number) => {
