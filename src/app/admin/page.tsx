@@ -43,7 +43,7 @@ export default function CreateSubjectTopicPage() {
           setSubjects(response.data.data);
         }
       } catch (error) {
-        console.log("error 45", error);
+        console.log("admin page error 46", error);
         console.log("=========================================================");
       }
     }
@@ -53,7 +53,7 @@ export default function CreateSubjectTopicPage() {
         const response = await axios.get("/api/admin/topic");
         setTopics(response.data.data);
       } catch (error) {
-        console.log("error 45", error);
+        console.log("admin page error 56", error);
         console.log("=========================================================");
       }
     }

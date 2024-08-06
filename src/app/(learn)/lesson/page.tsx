@@ -27,7 +27,7 @@ export default function Page() {
         
         setLessons(response);
       } catch (error) {
-        console.log("error 45", error);
+        console.log("lesson page: get all lessons error 30", error);
         console.log(
           "========================================================="
         );

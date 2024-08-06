@@ -38,7 +38,7 @@ export default function AdminModelsPage() {
                 // const data: FilterInterface[] = response.data.data;
                 setModels(["gpt-3.5-turbo", "gpt-4-0125-preview"])
             } catch (error) {
-                console.log("error 45", error);
+                console.log("admin config error 41", error);
                 console.log(
                     "========================================================="
                 );
@@ -71,9 +71,9 @@ export default function AdminModelsPage() {
     }
     return (
         <>
-            <div className="flex flex-col justify-center  w-full  p-4 pl-12 space-y-3  pt-32">
-                <h1 className=" text-lg text-blue-400 mb-3 ">Model Selection</h1>
-                <div className="flex flex-wrap w-full items-center">
+            <div className="flex flex-col justify-center w-full p-4 pt-32 pl-12 space-y-3">
+                <h1 className="mb-3 text-lg text-blue-400 ">Model Selection</h1>
+                <div className="flex flex-wrap items-center w-full">
                     <div className="w-3/4 px-3 ">
                         <label htmlFor="model">Select Current Models</label>
                         <select
@@ -96,7 +96,7 @@ export default function AdminModelsPage() {
                         <form onSubmit={handleSubmit} >
                             <button
                                 type="submit"
-                                className="bg-purple-500 w-full rounded-lg px-4 py-2 text-white font-semibold focus:outline-none hover:bg-purple-600 transition-colors duration-300"
+                                className="w-full px-4 py-2 font-semibold text-white transition-colors duration-300 bg-purple-500 rounded-lg focus:outline-none hover:bg-purple-600"
                             >
                                 Save
                             </button>

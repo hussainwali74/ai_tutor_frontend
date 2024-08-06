@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     }
   } catch (error) {
     console.log("----------------------------------------");
-    console.log("error 45 in audio route", error);
+    console.log("audio route error 40 in audio route", error);
     console.log("----------------------------------------");
     return new NextResponse("something went wrong", { status: 500 });
   }

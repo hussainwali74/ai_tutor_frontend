@@ -41,7 +41,7 @@ export default function CreateFiltersPage() {
         }
 
       } catch (error) {
-        console.log("error 45", error);
+        console.log("admin general prompt error 44", error);
         console.log(
           "========================================================="
         );

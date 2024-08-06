@@ -308,7 +308,7 @@ export default function TopicCRUDPage() {
         </DialogContent>
       </Dialog>
 
-      {loading && !topics.length ? (
+      {loading && !topics?.length ? (
         <div className="flex items-center justify-center h-64">
           <Loader2 className="w-8 h-8 animate-spin" />
         </div>

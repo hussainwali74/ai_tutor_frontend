@@ -91,7 +91,7 @@ export default function CreateFiltersPage() {
         setSubTopics(sub_tops);
         setFilters(response.data.data);
       } catch (error) {
-        console.log("error 45", error);
+        console.log("error 96", error);
         console.log(
           "========================================================="
         );
