@@ -115,6 +115,7 @@ export default function TopicCRUDPage() {
       setFormLoading(false);
     }
   }
+  
   async function fetchTopics() {
     try {
       setLoading(true);
