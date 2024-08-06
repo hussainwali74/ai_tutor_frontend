@@ -54,14 +54,16 @@ export default function ClassCRUDPage() {
     }
   }
 
-  async function onSubmit(data: Omit<typeof Class_.$inferInsert, "id" | "createdAt" | "updatedAt" | "deletedAt">) {
+  async function onSubmit(
+    data: Omit<typeof Class_.$inferInsert, "id" | "createdAt" | "updatedAt" | "deletedAt">
+  ) {
     try {
       setLoading(true);
       const url = editingClass ? `/api/admin/class/${editingClass.id}` : "/api/admin/class";
       const method = editingClass ? "PUT" : "POST";
       // TODO: change this to real admin_id
-      data.admin_id=1
-      
+      data.admin_id = 1;
+
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
@@ -168,8 +170,8 @@ export default function ClassCRUDPage() {
                 <TableCell>
                   {class_.imageSrc && (
                     <Image
-                    width={40}
-                    height={40}
+                      width={40}
+                      height={40}
                       src={class_.imageSrc}
                       alt={class_.title}
                       className="object-cover w-10 h-10 rounded"

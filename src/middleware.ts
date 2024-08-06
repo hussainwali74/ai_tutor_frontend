@@ -7,12 +7,12 @@ import db from "./db/drizzle";
 const protectedRoutes = createRouteMatcher([
   "/dashboard",
   "/learn",
+  "/lesson",
   "/home",
   "/admin/(.*)*",
   "/manage_admin/(.*)*",
   "/course",
   "/post_signup",
-  "/lesson",
   '/api/(.*)*',
 ]);
 

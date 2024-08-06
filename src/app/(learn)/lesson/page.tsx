@@ -6,35 +6,30 @@ import Image from "next/image";
 import Link from "next/link";
 import Modal from "@/components/modal";
 import LessonCardComponent from "./lesson_components/lesson_card.component";
-import { getLessons } from "@/db/queries/lesson.queries";
+import { getAllLessonsAction } from "../../../../actions/lesson.server_actions";
+import { Loader2 } from "lucide-react";
 
 export default function Page() {
   const [lessons, setLessons] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [startedLessonId, setStartedLessonId] = useState<number | undefined>();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    async function getAllLessons() {
+    async function fetchAllLessons() {
       try {
-        console.log("-----------------------------------------------------");
-        console.log("on frontend process.env.NEXT_PUBLIC_DATABASE_URL", process.env.NEXT_PUBLIC_DATABASE_URL);
-        console.log("-----------------------------------------------------");
-
-        const response = await getLessons();
-        console.log("-----------------------------------------------------");
-        console.log("response", response);
-        console.log("-----------------------------------------------------");
-        if (response) {
-          setLessons(response);
-        }
+        setLoading(true);
+        const r = await getAllLessonsAction();
+        setLessons(r);
+        setLoading(false);
       } catch (error) {
         console.log("lesson page: get all lessons error 30", error);
         console.log("=========================================================");
       }
     }
-    getAllLessons();
+    fetchAllLessons();
   }, []);
 
   const bgContainerStyle = {
@@ -50,13 +45,20 @@ export default function Page() {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4 lg:gap-6 ">
-        {lessons?.length
-          ? lessons?.map((lesson, i) => (
-              <LessonCardComponent key={i} i={i} lesson={lesson} startLesson={startLesson} />
-            ))
-          : null}
-      </div>
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-8 h-8 text-white animate-spin" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-4 lg:gap-6 ">
+          {lessons?.length
+            ? lessons?.map((lesson, i) => (
+                <LessonCardComponent key={i} i={i} lesson={lesson} startLesson={startLesson} />
+              ))
+            : null}
+        </div>
+      )}
+
       {isModalOpen && (
         <Modal isOpen={isModalOpen} handleClose={() => setIsModalOpen(!isModalOpen)}>
           <div className="flex flex-col w-full h-full">
