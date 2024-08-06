@@ -4,6 +4,10 @@ import OpenAI from "openai";
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
 });
+console.log('-----------------------------------------------------');
+console.log('process.env.OPENAI_API_KEY',process.env.OPENAI_API_KEY);
+console.log('-----------------------------------------------------');
+
 
 export type ChatCompletionMessageParam = {
   role: "user" | "system" | "assistant";
