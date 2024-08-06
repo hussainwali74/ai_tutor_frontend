@@ -45,7 +45,7 @@ jobs:
           GCLOUD_STORAGE_SERVICE_ACCOUNT_KEY: ${{ secrets.GCLOUD_STORAGE_SERVICE_ACCOUNT_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |-
-          `.io/$PROJECT_ID/$REPO_NAME:$GITHUB_SHA
+          docker build . --tag gcr.io/$PROJECT_ID/$REPO_NAME:$GITHUB_SHA
 
       - name: Push the image to the Google Container Registry (GCR)
         run: |-
