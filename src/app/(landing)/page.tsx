@@ -87,14 +87,14 @@ function Page() {
                 </div>
               </div>
               <div className="">
-                <DotLottieReact
+                {/* <DotLottieReact
                   autoResizeCanvas={true}
                   src="animation/1_yellow.lottie"
                   width={4}
                   height={4}
                   loop
                   autoplay
-                />
+                /> */}
               </div>
             </div>
           </div>
