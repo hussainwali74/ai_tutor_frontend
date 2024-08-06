@@ -1,8 +1,7 @@
 import { cache } from "react";
 import db from "../drizzle";
-import { lesson, student, student_bot_chat, user } from "../schema";
-import { and, eq } from "drizzle-orm";
-import { Student } from "../model";
+import { lesson } from "../schema";
+import { eq } from "drizzle-orm";
 
 // Lesson CRUD
 export const createLesson = cache(async (data: typeof lesson.$inferInsert) => {
