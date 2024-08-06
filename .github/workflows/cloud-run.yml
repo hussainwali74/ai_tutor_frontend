@@ -43,7 +43,7 @@ jobs:
           BASE_URL_FRONTEND: ${{ secrets.BASE_URL_FRONTEND }}
           NEXT_PUBLIC_DEEPGRAM_API_KEY: ${{ secrets.NEXT_PUBLIC_DEEPGRAM_API_KEY }}
           GCLOUD_STORAGE_SERVICE_ACCOUNT_KEY: ${{ secrets.GCLOUD_STORAGE_SERVICE_ACCOUNT_KEY }}
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |-
           docker build . --tag gcr.io/$PROJECT_ID/$REPO_NAME:$GITHUB_SHA
 
