@@ -3,6 +3,8 @@ import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
 console.log('-----------------------------------------------------');
+console.log('process.env',process.env);
+console.log('-----------------------------------------------------');
 console.log('process.env.NEXT_PUBLIC_DATABASE_URL',process.env.NEXT_PUBLIC_DATABASE_URL);
 console.log('-----------------------------------------------------');
 
