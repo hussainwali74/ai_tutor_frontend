@@ -6,6 +6,12 @@ const client = new OpenAI({
 });
 console.log('-----------------------------------------------------');
 console.log('process.env.OPENAI_API_KEY',process.env.OPENAI_API_KEY);
+console.log("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)
+console.log("CLERK_SECRET_KEY", process.env.CLERK_SECRET_KEY)
+console.log("NEXT_PUBLIC_CLERK_SIGN_IN_URL", process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL)
+console.log("NEXT_PUBLIC_CLERK_SIGN_UP_URL", process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL)
+console.log("NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL", process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL)
+console.log("NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL", process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL)
 console.log('-----------------------------------------------------');
 
 

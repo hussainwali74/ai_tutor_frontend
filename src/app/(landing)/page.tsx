@@ -14,10 +14,11 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import MainFooterComponent from "./footer";
+import LottaComponent from "./lotta.component";
 
 function Page() {
+
   return (
     <div className="flex flex-col w-full min-h-[100dvh] lg:mt-0 mt-24">
       <main className="flex-1">
@@ -87,6 +88,7 @@ function Page() {
                 </div>
               </div>
               <div className="">
+              <LottaComponent />
                 {/* <DotLottieReact
                   autoResizeCanvas={true}
                   src="animation/1_yellow.lottie"
