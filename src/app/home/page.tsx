@@ -72,7 +72,7 @@ export default function Page() {
           const student_data = await getStudentByClerkId(auth?.userId!);
           if (student_data) {
             // let convo = (await getChatByStudentId(student_data[0].student.id, parseInt(id), )) || [];
-            let convo = (await getChatByClerkId(auth.userId!, parseInt(id))) || [];
+            let convo:any[] = (await getChatByClerkId(auth.userId!, parseInt(id))) || [];
             if (convo) {
               adjustedChats = convo
                 .map((chat, i) => {
