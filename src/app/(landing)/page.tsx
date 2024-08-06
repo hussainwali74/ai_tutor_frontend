@@ -96,13 +96,6 @@ function Page() {
                   autoplay
                 />
               </div>
-              {/* <img
-                src="/placeholder.svg"
-                width="550"
-                height="550"
-                alt="AI Tutor"
-                className="object-cover mx-auto overflow-hidden aspect-video rounded-xl sm:w-full lg:order-last lg:aspect-square"
-              /> */}
             </div>
           </div>
         </section>

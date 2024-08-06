@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { getSubjectSerice, getTopicSerice } from "@/lib/service";
+import Image from "next/image";
 
 export default function TopicCRUDPage() {
   const [classes, setClasses] = useState<Class_Interface[]>([]);
@@ -329,7 +330,8 @@ export default function TopicCRUDPage() {
                 <TableCell>{topic.title}</TableCell>
                 <TableCell>
                   {topic.imageSrc && (
-                    <img src={topic.imageSrc} alt={topic.title} className="object-cover w-10 h-10 rounded" />
+                    <Image height={40} width={40} 
+                    src={topic.imageSrc} alt={topic.title} className="object-cover w-10 h-10 rounded" />
                   )}
                 </TableCell>
                 <TableCell>{new Date(topic.createdAt || "").toLocaleString()}</TableCell>

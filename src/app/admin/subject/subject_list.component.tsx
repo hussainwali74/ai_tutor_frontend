@@ -2,6 +2,7 @@ import { SubjectInterface } from "@/app/models/interfaces";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pencil, Trash2 } from "lucide-react";
+import Image from "next/image";
 
 import React from 'react'
 
@@ -31,7 +32,9 @@ export default function SubjectListComponent({Subjects, handleEdit, handleDelete
           <TableCell>{subject.title}</TableCell>
           <TableCell>
             {subject.imageSrc && (
-              <img
+              <Image
+              width={40}
+              height={40}
                 src={subject.imageSrc}
                 alt={subject.title}
                 className="object-cover w-10 h-10 rounded"
