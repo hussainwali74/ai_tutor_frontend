@@ -2,7 +2,7 @@ import { insertStudentChat } from "@/db/queries/student.queries";
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  apiKey: "asu", // This is the default and can be omitted
+  apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
 });
 console.log('-----------------------------------------------------');
 console.log('process.env.OPENAI_API_KEY',process.env.OPENAI_API_KEY);
@@ -33,7 +33,6 @@ class GPTLLm {
   }
 
   public async chatCompletion() {
-    client.apiKey = 'asdfasdfasdfasd'
     const chatCompletion = await client.chat.completions.create({
       messages: this.conversation_history,
       // model: "gpt-4o-mini",
