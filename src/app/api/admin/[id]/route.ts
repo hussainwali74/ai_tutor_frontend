@@ -1,4 +1,4 @@
-import { deleteUser, getUserByClerkId, getUserById, getUsers, updateUser } from "@/db/queries/user.queries";
+import { deleteUser, getUserById, getUsers, updateUser } from "@/db/queries/user.queries";
 import { NextRequest, NextResponse } from "next/server";
 
 // app/api/admines/[id]/route.ts

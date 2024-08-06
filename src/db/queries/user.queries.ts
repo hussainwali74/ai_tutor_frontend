@@ -1,7 +1,7 @@
 import { cache } from "react";
 import db from "../drizzle";
-import { student, student_bot_chat, user } from "../schema";
-import { and, eq } from "drizzle-orm";
+import { user } from "../schema";
+import { eq } from "drizzle-orm";
 
 export const insertUser = cache(async (data: typeof user.$inferInsert) => {
   const result = await db.insert(user).values(data).returning({ insertedId: user.id });
