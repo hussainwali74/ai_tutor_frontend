@@ -77,21 +77,25 @@ body,
 .prose h3,
 .prose p strong,
 .prose strong {
-  @apply my-[0.35rem] font-bold;
+  @apply my-[0.5rem] lg:font-bold  ;
 }
 .prose h1 {  
-  font-size: 1.65em;
+
+  @apply lg:text-[1.65rem] text-[1.35rem] font-bold
 }
 
 .prose h2 {  
-  font-size: 1.35em;
+  @apply lg:text-[1.35rem] text-[1.15rem] font-bold
+  /* @apply text-[1.15rem] lg:text-[1.35rem] */
 }
 
 .prose h3 {  
-  font-size: 1.15em;
+  @apply lg:text-[1.15rem] text-[1.05rem] font-bold
+  /* font-size: 1.15em; */
 }
 
 
 .prose p {
-  font-weight: 400;
+  @apply lg:text-[1rem] text-[0.8rem] lg:font-[400] font-semibold
+  /* font-weight: 400; */
 }

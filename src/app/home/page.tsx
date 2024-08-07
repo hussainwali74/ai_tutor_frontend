@@ -9,10 +9,10 @@ import { Separator } from "@radix-ui/react-separator";
 import { HomeFormComponent } from "@/components/home/form";
 import { HomeRightSectionComponent } from "@/components/home/right_section";
 import HomeHeaderComponent from "./home.header.component";
-import { getChatByClerkId } from "@/db/queries";
 import { useAuth } from "@clerk/nextjs";
 import { getStudentByClerkId } from "@/db/queries/student.queries";
 import { getLessonById } from "@/db/queries/lesson.queries";
+import { getChatByClerkIdAction } from "../../../actions/lesson.server_actions";
 
 interface AudioQueueItem {
   audio_path: string;
@@ -72,7 +72,7 @@ export default function Page() {
           const student_data = await getStudentByClerkId(auth?.userId!);
           if (student_data) {
             // let convo = (await getChatByStudentId(student_data[0].student.id, parseInt(id), )) || [];
-            let convo:any[] = (await getChatByClerkId(auth.userId!, parseInt(id))) || [];
+            let convo: any[] = (await getChatByClerkIdAction(auth.userId!, parseInt(id))) || [];
             if (convo) {
               adjustedChats = convo
                 .map((chat, i) => {
@@ -175,16 +175,16 @@ export default function Page() {
   return (
     <div className="flex flex-col">
       <HomeHeaderComponent />
-      <div className="flex flex-row bg-gray-100">
+      <div className="flex flex-row mt-16 bg-gray-100">
         <div
-          className="w-2/3 h-screen px-2 space-y-2 overflow-hidden"
+          className="w-full h-screen px-2 space-y-2 overflow-hidden lg:mt-[6px] lg:w-3/4"
           style={{
             backgroundImage: `url('/chat_bg.png')`,
-            height: "88vh",
+            height: "100vh",
             width: "100%",
           }}
         >
-          <div className="flex flex-col w-full">
+          <div className="flex flex-col w-full h-full pt-2 space-y-2 ">
             {isLoading && !chatLog.length ? (
               <div className="relative left-[2rem] top-[2rem] -bottom-[38rem]">
                 <div className="bg-gray-300 rounded-lg p-4 text-white w-[4rem]">
@@ -192,8 +192,8 @@ export default function Page() {
                 </div>
               </div>
             ) : chatLog.length ? (
-              <div className="flex-grow pl-6 pr-1 mt-5 fixed mb-20 h-[66%] w-[76%] overflow-y-scroll">
-                <div className="flex flex-col px-10 space-y-4">
+              <div className="flex-grow  lg:pl-6 lg:pr-1 px-0  lg:mb-20 lg:h-[78%] h-[50%]  w-full ">
+                <div className="flex flex-col h-[43rem] lg:h-[46rem] px-0 space-y-4 pt-2 overflow-scroll lg:px-12 overflow-x-hidden">
                   {chatLog.map((message, index) => (
                     <div key={index} ref={index === chatLog.length - 1 ? lastMessageRef : null}>
                       <ChatMessage message={message} />
@@ -210,20 +210,32 @@ export default function Page() {
                 </div>
               </div>
             ) : null}
-            <HomeFormComponent
-              audioLessonEnabled={audioLessonEnabled}
-              disabled={isLoading}
-              handleSubmit={handleSubmit}
-              inputValue={inputValue}
-              setInputValue={setInputValue}
-            />
+            <div className="flex h-[8%] bottom-2 fixed z-10 lg:w-full">
+              <HomeFormComponent
+                audioLessonEnabled={audioLessonEnabled}
+                disabled={isLoading}
+                handleSubmit={handleSubmit}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+              />
+              <div className="w-full h-12 lg:hidden">
+              <HomeRightSectionComponent
+            speaking={isAudioPlaying}
+            audioLessonEnabled={audioLessonEnabled}
+            onDisableSpeech={handleAudioLesson}
+          />
+
+              </div>
+            </div>
           </div>
         </div>
-        <HomeRightSectionComponent
-          speaking={isAudioPlaying}
-          audioLessonEnabled={audioLessonEnabled}
-          onDisableSpeech={handleAudioLesson}
-        />
+        <div className="hidden lg:w-1/4 lg:flex bg-orange-50">
+          <HomeRightSectionComponent
+            speaking={isAudioPlaying}
+            audioLessonEnabled={audioLessonEnabled}
+            onDisableSpeech={handleAudioLesson}
+          />
+        </div>
       </div>
     </div>
   );

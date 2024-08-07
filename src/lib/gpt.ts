@@ -2,7 +2,7 @@ import { insertStudentChat } from "@/db/queries/student.queries";
 import OpenAI from "openai";
 
 const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY||'da', // This is the default and can be omitted
+  apiKey: process.env.OPENAI_API_KEY || "da", // This is the default and can be omitted
 });
 
 export type ChatCompletionMessageParam = {

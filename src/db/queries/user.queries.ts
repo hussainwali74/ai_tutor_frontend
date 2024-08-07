@@ -5,10 +5,6 @@ import { eq } from "drizzle-orm";
 
 export const insertUser = cache(async (data: typeof user.$inferInsert) => {
   const result = await db.insert(user).values(data).returning({insertedId: user.id})
-  console.log("-----------------------------------------------------");
-  console.log("user queries insert result : ", result);
-  console.log("-----------------------------------------------------");
-
   return result;
 });
 

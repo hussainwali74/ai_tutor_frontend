@@ -30,22 +30,20 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-
   try {
-
-    let idstr = params.id ;
+    let idstr = params.id;
     if (idstr) {
       const id = parseInt(idstr, 10); // Convert string to number
       const data = await req.json();
-      console.log('-----------------------------------------------------');
-      console.log('data in put',data);
-      console.log('-----------------------------------------------------');
-      delete data['createdAt'];
+      console.log("-----------------------------------------------------");
+      console.log("data in put", data);
+      console.log("-----------------------------------------------------");
+      delete data["createdAt"];
       const updatedAdmin = await updateUser(id, data);
-      console.log('-----------------------------------------------------');
-      console.log('updatedAdmin',updatedAdmin);
-      console.log('-----------------------------------------------------');
-      
+      console.log("-----------------------------------------------------");
+      console.log("updatedAdmin", updatedAdmin);
+      console.log("-----------------------------------------------------");
+
       return NextResponse.json(updatedAdmin);
     }
   } catch (error) {
@@ -57,18 +55,16 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string }}) {
-
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    
-    let id = parseInt(params.id)
+    let id = parseInt(params.id);
     if (id) {
       const deletedadmin = await deleteUser(id);
 
-      console.log('-----------------------------------------------------');
-      console.log('deletedadmin',deletedadmin);
-      console.log('-----------------------------------------------------');
-      
+      console.log("-----------------------------------------------------");
+      console.log("deletedadmin", deletedadmin);
+      console.log("-----------------------------------------------------");
+
       return NextResponse.json(deletedadmin);
     }
   } catch (error) {

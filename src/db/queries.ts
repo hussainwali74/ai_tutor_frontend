@@ -3,7 +3,7 @@ import { Student, User } from "./model";
 
 import { cache } from "react";
 import db from "./drizzle";
-import { eq, and } from "drizzle-orm";
+import { eq, and, ne } from "drizzle-orm";
 import {
   prompt,
   Class_,
@@ -117,9 +117,7 @@ export const deleteStudentLesson = cache(async (id: number) => {
 });
 
 
-
 // chat
-
 
 export const getChatByClerkId = cache(async (clerk_id: string, lesson_id: number, limit: number = 10) => {
   // Join student_bot_chat with student and user tables
@@ -130,8 +128,6 @@ export const getChatByClerkId = cache(async (clerk_id: string, lesson_id: number
     .from(student_bot_chat)
     .innerJoin(student, eq(student_bot_chat.student_id, student.id))
     .innerJoin(user, eq(student.user_id, user.id))
-    .where(and(eq(student_bot_chat.lesson_id, lesson_id), eq(user.clerk_id, clerk_id)))
-    .limit(limit);
-
+    .where(and(eq(student_bot_chat.lesson_id, lesson_id), eq(user.clerk_id, clerk_id),ne(student_bot_chat.role,'system')))
   return data;
 });

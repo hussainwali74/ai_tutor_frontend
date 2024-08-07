@@ -1,5 +1,6 @@
 "use server";
 
+import { getChatByClerkId } from "@/db/queries";
 import { getClass_es } from "@/db/queries/class.queries";
 import { getLessons } from "@/db/queries/lesson.queries";
 import { getTopics } from "@/db/queries/topic.queries";
@@ -53,4 +54,20 @@ export const getAllClassesAction = async () => {
   }
   revalidatePath("/learn");
   return classes;
+};
+
+export const getChatByClerkIdAction = async (clerk_id:string, lesson_id:number) => {
+  const { userId } = auth();
+  const user = await currentUser();
+
+  if (!userId || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const chats = await getChatByClerkId(clerk_id,lesson_id);
+  if (!chats) {
+    throw new Error("chats not found");
+  }
+  revalidatePath("/home");
+  return chats;
 };
