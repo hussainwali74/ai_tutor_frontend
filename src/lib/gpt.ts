@@ -4,17 +4,6 @@ import OpenAI from "openai";
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY||'da', // This is the default and can be omitted
 });
-console.log('-----------------------------------------------------');
-console.log('process.env.OPENAI_API_KEY',process.env.OPENAI_API_KEY);
-console.log("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)
-console.log("NEXT_PUBLIC_DEEPGRAM_API_KEY", process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY)
-console.log("CLERK_SECRET_KEY", process.env.CLERK_SECRET_KEY)
-console.log("NEXT_PUBLIC_CLERK_SIGN_IN_URL", process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL)
-console.log("NEXT_PUBLIC_CLERK_SIGN_UP_URL", process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL)
-console.log("NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL", process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL)
-console.log("NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL", process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL)
-console.log('-----------------------------------------------------');
-
 
 export type ChatCompletionMessageParam = {
   role: "user" | "system" | "assistant";
@@ -35,8 +24,8 @@ class GPTLLm {
   public async chatCompletion() {
     const chatCompletion = await client.chat.completions.create({
       messages: this.conversation_history,
-      // model: "gpt-4o-mini",
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o-mini",
+      // model: "gpt-3.5-turbo",
     });
 
     return chatCompletion.choices[0].message.content;
