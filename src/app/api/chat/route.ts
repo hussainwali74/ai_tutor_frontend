@@ -10,13 +10,24 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     let res = "there seems to be some issue please try again later";
     const userId = req.headers.get("clerk_id");
-
+    console.log('-----------------------------------------------------');
+    console.log('userId in route chat',userId);
+    console.log('-----------------------------------------------------');
+    
     if (userId) {
       const student_data = await getStudentByClerkId(userId);
+      console.log('-----------------------------------------------------');
+      console.log('student_data in route chat',student_data);
+      console.log('-----------------------------------------------------');
+      
       if (student_data.length) {
         const student_id = student_data[0]?.student.id;
 
         const chat_data = await getChatByStudentId(student_id, body.lesson_id);
+        console.log('-----------------------------------------------------');
+        console.log('chat_data in route chat',chat_data);
+        console.log('-----------------------------------------------------');
+        
         if (!chat_data.length) {
           const system_prompt1 = await getSystemPrompt(body.lesson_data);
           ({ res, gpt } = await sendMsg("system", student_id, body.lesson_id, system_prompt1, gpt));
@@ -32,6 +43,10 @@ export async function POST(req: NextRequest) {
           });
           gpt.conversation_history = conversation_history;
           ({ res, gpt } = await sendMsg("user", student_id, body.lesson_id, body.message, gpt));
+          console.log('-----------------------------------------------------');
+          console.log('res in route chat',res);
+          console.log('-----------------------------------------------------');
+          
         } else if (chat_data.length) {
         }
       }
