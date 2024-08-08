@@ -69,10 +69,11 @@ export default function Page() {
       if (id) {
         try {
           let lessonData: LessonInterface | null = JSON.parse(localStorage.getItem("lesson_data") || "null");
-          const student_data = await getStudentByClerkId(auth?.userId!);
-          if (student_data) {
+          // const student_data = await getStudentByClerkId(auth?.userId!);
+
             // let convo = (await getChatByStudentId(student_data[0].student.id, parseInt(id), )) || [];
             let convo: any[] = (await getChatByClerkIdAction(auth.userId!, parseInt(id))) || [];
+            
             if (convo) {
               adjustedChats = convo
                 .map((chat, i) => {
@@ -88,7 +89,7 @@ export default function Page() {
                 setChatLog(adjustedChats);
               }
             }
-          }
+          
           if (!lessonData) {
             const fetchedLesson = await getLessonById(parseInt(id));
             if (fetchedLesson) {
