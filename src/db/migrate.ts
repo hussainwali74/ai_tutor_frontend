@@ -4,7 +4,7 @@ import {drizzle} from 'drizzle-orm/node-postgres'
 import {migrate} from 'drizzle-orm/node-postgres/migrator'
 // import {migrate} from 'drizzle-orm/postgres-js/migrator'
 const pool = new Pool({
-    connectionString:process.env.NEXT_PUBLIC_DATABASE_URL!
+    connectionString:process.env.DATABASE_URL!
 })
 
 const db = drizzle(pool)
