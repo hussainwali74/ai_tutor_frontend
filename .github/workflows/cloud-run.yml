@@ -32,8 +32,7 @@ jobs:
       - name: Authorize Docker push
         run: gcloud auth configure-docker
       - name: Log Environment Variables
-        run: echo "DATABASE_URL=${secrets.DATABASE_URL}"
-
+        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}"
       - name: Build and tag the docker image
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
