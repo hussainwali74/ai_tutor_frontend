@@ -31,8 +31,6 @@ jobs:
 
       - name: Authorize Docker push
         run: gcloud auth configure-docker
-      - name: Log Environment Variables
-        run: echo "OPENAI_API_KEY=${OPENAI_API_KEY}"
       - name: Build and tag the docker image
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
