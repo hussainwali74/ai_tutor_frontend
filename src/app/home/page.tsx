@@ -10,7 +10,6 @@ import { HomeFormComponent } from "@/components/home/form";
 import { HomeRightSectionComponent } from "@/components/home/right_section";
 import HomeHeaderComponent from "./home.header.component";
 import { useAuth } from "@clerk/nextjs";
-import { getStudentByClerkId } from "@/db/queries/student.queries";
 import { getLessonById } from "@/db/queries/lesson.queries";
 import { getChatByClerkIdAction } from "../../../actions/lesson.server_actions";
 
@@ -45,6 +44,7 @@ export default function Page() {
   const [chatLog, setChatLog] = useState<ChatLogItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [audioLessonEnabled, setAudioLessonEnabled] = useState(false);
+  const audioLessonEnabledRef = useRef(audioLessonEnabled); // Create a ref to track the enabled state
   const [inputValue, setInputValue] = useState("");
   const lastMessageRef = useRef<HTMLDivElement | null>(null);
   const params = useSearchParams();
@@ -69,27 +69,25 @@ export default function Page() {
       if (id) {
         try {
           let lessonData: LessonInterface | null = JSON.parse(localStorage.getItem("lesson_data") || "null");
-          // const student_data = await getStudentByClerkId(auth?.userId!);
 
-            // let convo = (await getChatByStudentId(student_data[0].student.id, parseInt(id), )) || [];
-            let convo: any[] = (await getChatByClerkIdAction(auth.userId!, parseInt(id))) || [];
-            
-            if (convo) {
-              adjustedChats = convo
-                .map((chat, i) => {
-                  if (i > 0) {
-                    return {
-                      role: chat.chat?.role as "user" | "assistant" | "system",
-                      content: chat.chat?.content ?? "",
-                    };
-                  }
-                })
-                .filter((chat): chat is ChatLogItem => chat !== undefined); // Filter out undefined values
-              if (adjustedChats) {
-                setChatLog(adjustedChats);
-              }
+          let convo: any[] = (await getChatByClerkIdAction(auth.userId!, parseInt(id))) || [];
+
+          if (convo) {
+            adjustedChats = convo
+              .map((chat, i) => {
+                if (i > 0) {
+                  return {
+                    role: chat.chat?.role as "user" | "assistant" | "system",
+                    content: chat.chat?.content ?? "",
+                  };
+                }
+              })
+              .filter((chat): chat is ChatLogItem => chat !== undefined); // Filter out undefined values
+            if (adjustedChats) {
+              setChatLog(adjustedChats);
             }
-          
+          }
+
           if (!lessonData) {
             const fetchedLesson = await getLessonById(parseInt(id));
             if (fetchedLesson) {
@@ -133,7 +131,7 @@ export default function Page() {
 
   const handleAudio = useCallback(
     async (text: string) => {
-      if (audioLessonEnabled) {
+      if (audioLessonEnabledRef.current) {
         const sentences = text.split(/(?<=[.!?])\s+/);
         for (let i = 0; i < sentences.length; i += 2) {
           const chunk = sentences.slice(i, i + 2).join(" ");
@@ -153,7 +151,13 @@ export default function Page() {
       if (audioQueue.length > 0 && !isAudioPlaying) {
         setIsAudioPlaying(true);
         const nextAudio = audioQueue[0];
-        await playAudio(nextAudio.audio_path);
+
+        await playAudio(nextAudio.audio_path).catch((e) => {
+          console.log("-----------------------------------------------------");
+          console.log("error 172 playAudio page.tsx home", e);
+          console.log("-----------------------------------------------------");
+          setIsAudioPlaying(false);
+        });
         setAudioQueue((prevQueue) => prevQueue.slice(1));
         setIsAudioPlaying(false);
       }
@@ -162,7 +166,10 @@ export default function Page() {
   }, [audioQueue, isAudioPlaying]);
 
   const handleAudioLesson = useCallback(() => {
-    setAudioLessonEnabled((prev) => !prev);
+    setAudioLessonEnabled((prev) => {
+      audioLessonEnabledRef.current = !prev;
+      return !prev;
+    });
   }, []);
 
   const handleSubmit = useCallback(() => {
@@ -211,21 +218,22 @@ export default function Page() {
                 </div>
               </div>
             ) : null}
-            <div className="flex h-[8%] bottom-2 fixed z-10 lg:w-full">
-              <HomeFormComponent
-                audioLessonEnabled={audioLessonEnabled}
-                disabled={isLoading}
-                handleSubmit={handleSubmit}
-                inputValue={inputValue}
-                setInputValue={setInputValue}
-              />
-              <div className="w-full h-12 lg:hidden">
-              <HomeRightSectionComponent
-            speaking={isAudioPlaying}
-            audioLessonEnabled={audioLessonEnabled}
-            onDisableSpeech={handleAudioLesson}
-          />
-
+            <div className="flex h-[8%] bottom-2 md:w-full fixed z-10 lg:w-full">
+              <div className="md:w-3/4">
+                <HomeFormComponent
+                  audioLessonEnabled={audioLessonEnabled}
+                  disabled={isLoading}
+                  handleSubmit={handleSubmit}
+                  inputValue={inputValue}
+                  setInputValue={setInputValue}
+                />
+              </div>
+              <div className="w-full h-12 md:w-1/4 lg:hidden">
+                <HomeRightSectionComponent
+                  speaking={isAudioPlaying}
+                  audioLessonEnabled={audioLessonEnabled}
+                  onDisableSpeech={handleAudioLesson}
+                />
               </div>
             </div>
           </div>

@@ -23,9 +23,13 @@ export const getAudio = async (text: string) => {
 
 export const playAudio = async (audio_path: string) => {
   const audio = new Audio(audio_path);
+  console.log('-----------------------------------------------------');
+  console.log('audio_path',audio_path);
+  console.log('-----------------------------------------------------');
+  
   return new Promise((resolve, reject) => {
     audio.onended = resolve;
     audio.onerror = reject;
     audio.play();
-  });
+  })
 };
