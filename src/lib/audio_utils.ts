@@ -1,4 +1,3 @@
-
 export const getAudio = async (text: string) => {
   try {
     console.log("getting audio --------------------------");
@@ -12,10 +11,10 @@ export const getAudio = async (text: string) => {
     if (!response.ok) {
       console.log("---------------------------------------- error 184");
     }
-    if (data ){
-        const audioUrl = URL.createObjectURL(data)
-        return audioUrl;
-    } 
+    if (data) {
+      const audioUrl = URL.createObjectURL(data);
+      return audioUrl;
+    }
   } catch (error) {
     console.error("error", error);
   }
@@ -23,13 +22,10 @@ export const getAudio = async (text: string) => {
 
 export const playAudio = async (audio_path: string) => {
   const audio = new Audio(audio_path);
-  console.log('-----------------------------------------------------');
-  console.log('audio_path',audio_path);
-  console.log('-----------------------------------------------------');
-  
+
   return new Promise((resolve, reject) => {
     audio.onended = resolve;
     audio.onerror = reject;
     audio.play();
-  })
+  });
 };
