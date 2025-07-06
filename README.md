@@ -2,7 +2,7 @@
 
 # AI Tutor Frontend
 
-AI Tutor Frontend is a modern, full-featured web application built with TypeScript and Next.js, designed to empower students and educators with AI-driven personalized tutoring. The platform allows users to upload educational videos (including YouTube links), from which it generates interactive lessons, flashcards, exercises, notes, and detailed summaries—making self-paced and adaptive learning accessible to everyone.
+AI Tutor Frontend is a modern, full-featured web application built with TypeScript and Next.js, designed to empower students and educators with AI-driven personalized tutoring. The platform allows users to Add Topics and lessons, from which it generates interactive lessons, flashcards, exercises, notes, and detailed summaries—making self-paced and adaptive learning accessible to everyone.
 
 ---
 
@@ -10,7 +10,7 @@ AI Tutor Frontend is a modern, full-featured web application built with TypeScri
 
 ### 🚀 Key Functionalities
 
-- **AI-Powered Lesson Generation**: Upload a video or provide a YouTube link, and the platform automatically extracts content, creating structured lessons with summaries, notes, and contextual explanations.
+- **AI-Powered Lesson Generation**: Add Topics and lessons, link, and the platform automatically extracts content, creating structured lessons with summaries, notes, and contextual explanations.
 - **Flashcards & Exercises**: Instantly generate flashcards and practice questions (including MCQs and long-form) based on uploaded content, aiding retention and comprehension.
 - **Progress Tracking**: Monitor learning progress over time, with features for students and teachers to view, annotate, and get feedback on lessons and exercises.
 - **Speech-to-Text**: Integrated voice recognition allowing users to interact with the platform, submit answers, and navigate lessons using their voice.
