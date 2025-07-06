@@ -1,3 +1,5 @@
+![Description of image](public/AI_Tutor_landing_page.png)
+
 # AI Tutor Frontend
 
 AI Tutor Frontend is a modern, full-featured web application built with TypeScript and Next.js, designed to empower students and educators with AI-driven personalized tutoring. The platform allows users to upload educational videos (including YouTube links), from which it generates interactive lessons, flashcards, exercises, notes, and detailed summaries—making self-paced and adaptive learning accessible to everyone.
@@ -62,19 +64,19 @@ AI Tutor Frontend is a modern, full-featured web application built with TypeScri
 
 ## Getting Started
 
-1. **Install dependencies**:  
+1. **Install dependencies**:
    ```bash
    bun install
    ```
-2. **UI Components**:  
+2. **UI Components**:
    ```bash
    bunx --bun shadcn-ui@latest add sheet
    ```
-3. **If you get `drizzle-kit command not found` error**:  
+3. **If you get `drizzle-kit command not found` error**:
    ```bash
    export PATH="./node_modules/.bin:$PATH"
    ```
-4. **Run the development server**:  
+4. **Run the development server**:
    ```bash
    bun run dev
    ```
